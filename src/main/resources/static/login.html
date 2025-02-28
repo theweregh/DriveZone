@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión - DriveZone</title>
+    <link rel="stylesheet" href="stylelogin.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-top" role="navigation" aria-label="Navegación superior">
+            <ul>
+                <!--<li><a href="#"><img src="https://i.ibb.co/56HFx43/Dise-o-sin-t-tulo-13.png" alt="Logo UPB" class="logo"></a></li>-->
+            </ul>
+        </nav>
+        <div class="rectangle" aria-hidden="true"></div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="login-container">
+            <h2>Iniciar Sesión</h2>
+            <form action="#" method="post">
+                <div class="input-group">
+                    <label for="correo">Correo</label>
+                    <input type="text" id="correo" name="correo" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+            </form>
+            <div class="login-footer">
+                <button onclick="iniciarSesion()"  type="submit" class="login-button">Iniciar Sesión</button>
+                <p>¿No tienes cuenta? <a href="registrar.html">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <!--<img src="https://www.upb.edu.co/wcs_statics/pp/img/logo-blanco.svg" alt="Logo Footer" class="footer-logo">-->
+        <p>&copy; 2025 DriveZone. Todos los derechos reservados.</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>
