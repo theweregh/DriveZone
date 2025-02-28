@@ -1,6 +1,8 @@
 package com.DriveZone.DriveZone.dao;
 
 import com.DriveZone.DriveZone.models.Usuario;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -32,9 +34,17 @@ public class UsuarioDaoImp  implements UsuarioDao{
         entityManager.merge(usuario);
     }
     @Override
-    public boolean verificarCredenciales(Usuario usuario) {
-        String query = "FROM Usuario WHERE correo = :correo AND password = :password";
-        List<Usuario> lista = entityManager.createQuery(query).setParameter("correo", usuario.getCorreo()).setParameter("password", usuario.getPassword()).getResultList();
-        return !lista.isEmpty();
+    public Usuario obtenerUsuarioPorCredenciales(Usuario usuario) {
+        String query = "FROM Usuario WHERE correo = :correo";
+        List<Usuario> lista = entityManager.createQuery(query).setParameter("correo", usuario.getCorreo()).getResultList();
+        if(lista.isEmpty()) {
+            return null;
+        }
+        String passwordHashed = lista.get(0).getPassword();
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        if(argon2.verify(passwordHashed,usuario.getPassword())) {
+            return lista.get(0);
+        }
+        return null;
     }
 }

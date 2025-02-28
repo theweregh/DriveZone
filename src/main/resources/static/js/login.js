@@ -15,7 +15,9 @@ let datos = {
         body: JSON.stringify(datos)
         });
     const respuesta = await request.text();
-    if(respuesta == 'ok'){
+    if(respuesta != 'error'){
+        localStorage.token = respuesta;
+        localStorage.email = datos.correo;
         location.href = 'buscarUsuario.html';
     }else{
         alert('Usuario o contraseña incorrectos');

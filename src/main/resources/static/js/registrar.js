@@ -25,6 +25,6 @@ if(datos.password != repetirPassword){
     },
         body: JSON.stringify(datos)
         });
-  //const usuarios = await request.json();
-
+        alert('Usuario registrado correctamente');
+        windows.location.href = 'login.html'
   }
