@@ -18,7 +18,11 @@ let datos = {
     if(respuesta != 'error'){
         localStorage.token = respuesta;
         localStorage.email = datos.correo;
-        location.href = 'buscarUsuario.html';
+        if (datos.correo.endsWith("@drivezone.com")) {
+        window.location.href = "buscarUsuario.html";
+        } else {
+            window.location.href = "clientes.html";
+        }
     }else{
         alert('Usuario o contraseña incorrectos');
     }

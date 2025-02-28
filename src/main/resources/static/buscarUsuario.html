@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuarios</title>
-    <!--<link rel="stylesheet" href="style.css">-->
-    <!-- Estilos de DataTables -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <!-- Agregar estilos de DataTables -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
-<!-- Agregar el script de DataTables -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- CSS de DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <!-- jQuery (Debe ir antes de DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- JS de DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <h1>Lista de Usuarios</h1>
 
-    <table border="1">
+    <!-- 🔹 Campo de búsqueda en tiempo real -->
+    <input type="text" id="busqueda" placeholder="Buscar por nombre o ID" class="form-control">
+    <!--<input type="text" id="busqueda" placeholder="Buscar por ID o nombre...">-->
+    <table id="tablaUsuarios" class="display">
         <thead>
             <tr>
                 <th>ID</th>
@@ -26,15 +30,15 @@
                 <th>Correo</th>
                 <th>Dirección</th>
                 <th>Teléfono</th>
-                <th>password</th>
-                <th>acciones</th>
+                <th>Password</th>
+                <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="tablaUsuarios">
+        <tbody>
             <!-- Aquí se insertarán los usuarios dinámicamente -->
         </tbody>
     </table>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="js/usuarios.js"></script>
 </body>
 </html>

@@ -26,5 +26,5 @@ if(datos.password != repetirPassword){
         body: JSON.stringify(datos)
         });
         alert('Usuario registrado correctamente');
-        windows.location.href = 'login.html'
+        window.location.href = 'login.html'
   }
