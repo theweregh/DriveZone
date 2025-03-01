@@ -8,13 +8,13 @@ let paginaActual = 1;
 const accesoriosPorPagina = 6; // Ajusta según el diseño
 
 async function cargarAccesorios() {
-    const request = await fetch('api/accesorio', {
-        method: 'GET',
-        headers: getHeaders()
-    });
-
-    accesoriosCargados = await request.json();
-    mostrarAccesorios();
+    try {
+        const request = await fetch('/api/accesorio', { method: 'GET', headers: getHeaders() });
+        accesoriosCargados = await request.json();
+        mostrarAccesorios();
+    } catch (error) {
+        console.error("❌ Error al cargar accesorios:", error);
+    }
 }
 
 function mostrarAccesorios() {
@@ -34,7 +34,7 @@ function mostrarAccesorios() {
             <p>${accesorio.descripcion}</p>
             <p><strong>Precio: </strong> $${accesorio.precioVenta}</p>
             <input type="number" id="cantidad-${accesorio.id}" min="1" value="1">
-            <button onclick="agregarAlCarrito(${accesorio.id}, '${accesorio.nombre}', ${accesorio.precioVenta})">Agregar</button>
+            <button onclick="agregarAlCarrito(${accesorio.id})">Agregar</button>
         `;
         contenedor.appendChild(item);
     });
@@ -65,36 +65,53 @@ function getHeaders() {
     };
 }
 
-// 🔹 Agregar accesorio al carrito
-async function agregarAlCarrito(id, nombre, precio) {
+// 🔹 Agregar accesorio al carrito (corregido)
+async function agregarAlCarrito(id) {
     const cantidad = parseInt(document.getElementById(`cantidad-${id}`).value);
     if (cantidad <= 0) {
-        alert("La cantidad debe ser mayor a 0.");
+        alert("❌ La cantidad debe ser mayor a 0.");
         return;
     }
 
-    const accesorio = { id, nombre, precioVenta: precio, cantidad };
+    // 🔹 Buscar el accesorio en la lista cargada
+    const accesorio = accesoriosCargados.find(a => a.id === id);
+    if (!accesorio) {
+        alert("❌ Error: accesorio no encontrado");
+        return;
+    }
 
-    const response = await fetch('/api/carrito/agregar', {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(accesorio)
-    });
+    const data = {
+        accesorio: accesorio,  // ✅ Enviar objeto completo
+        cantidad: cantidad
+    };
 
-    if (response.ok) {
+    try {
+        const response = await fetch('/api/carrito/agregar', {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Error al agregar al carrito");
+
         actualizarContadorCarrito();
-        alert(`Añadido: ${nombre} x${cantidad} - $${precio * cantidad}`);
-    } else {
-        alert("Error al agregar al carrito");
+        alert(`✅ Añadido al carrito: ${accesorio.nombre} x${cantidad}`);
+    } catch (error) {
+        console.error("❌ Error en agregarAlCarrito:", error);
+        alert("❌ No se pudo agregar al carrito");
     }
 }
 
 // 🔹 Actualizar contador del carrito
 async function actualizarContadorCarrito() {
-    const response = await fetch('/api/carrito', { headers: getHeaders() });
-    if (response.ok) {
-        const accesorios = await response.json();
-        document.getElementById("contador-carrito").innerText = accesorios.length;
+    try {
+        const response = await fetch('/api/carrito', { headers: getHeaders() });
+        if (response.ok) {
+            const accesorios = await response.json();
+            document.getElementById("contador-carrito").innerText = accesorios.length;
+        }
+    } catch (error) {
+        console.error("❌ Error al actualizar el contador del carrito:", error);
     }
 }
 

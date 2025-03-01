@@ -2,49 +2,39 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarCarrito();
 });
 
-// ⚪️ Cargar productos en el carrito
+// 🔹 Cargar productos en el carrito
 async function cargarCarrito() {
     try {
         const response = await fetch('/api/carrito', { headers: getHeaders() });
         if (!response.ok) throw new Error("Error al cargar el carrito");
 
-        const accesorios = await response.json();
-        console.log("Carrito cargado:", accesorios);
-        mostrarCarrito(accesorios);
+        const carrito = await response.json();
+        console.log("Carrito cargado:", carrito);
+        mostrarCarrito(carrito);
     } catch (error) {
         console.error("Error en cargarCarrito:", error);
     }
 }
 
-// ⚪️ Mostrar productos en la tabla del carrito sin duplicados
-function mostrarCarrito(accesorios) {
+// 🔹 Mostrar productos en la tabla del carrito
+function mostrarCarrito(carrito) {
     const listaCarrito = document.getElementById("carrito-lista");
     const totalCarrito = document.getElementById("total-carrito");
     listaCarrito.innerHTML = "";
     let total = 0;
 
-    // Mapa para agrupar productos por ID
-    const carritoAgrupado = accesorios.reduce((acc, item) => {
-        if (!acc[item.id]) {
-            acc[item.id] = { ...item, cantidad: 0 };
-        }
-        acc[item.id].cantidad += item.cantidad;
-        return acc;
-    }, {});
-
-    Object.values(carritoAgrupado).forEach(accesorio => {
-        const nombre = accesorio.nombre || "Sin nombre";
-        const precioVenta = accesorio.precioVenta || 0;
-        const cantidad = accesorio.cantidad || 1;
-        const subtotal = precioVenta * cantidad;
+    carrito.forEach(item => {
+        const accesorio = item.accesorio;
+        const cantidad = item.cantidad || 1;
+        const subtotal = accesorio.precioVenta * cantidad;
         total += subtotal;
 
         const fila = document.createElement("tr");
         fila.innerHTML = `
-            <td>${nombre}</td>
-            <td>$${precioVenta.toFixed(2)}</td>
+            <td>${accesorio.nombre}</td>
+            <td>$${accesorio.precioVenta.toFixed(2)}</td>
             <td>
-                <input type="number" name="cantidad-${accesorio.id}" value="${cantidad}" min="1"
+                <input type="number" value="${cantidad}" min="1"
                     onchange="actualizarCantidad(${accesorio.id}, this.value)">
             </td>
             <td>$${subtotal.toFixed(2)}</td>
@@ -59,9 +49,9 @@ function mostrarCarrito(accesorios) {
     totalCarrito.innerText = `$${total.toFixed(2)}`;
 }
 
-// ⚪️ Actualizar cantidad de un producto en el carrito
+// 🔹 Actualizar cantidad de un producto en el carrito
 async function actualizarCantidad(id, nuevaCantidad) {
-    if (!id || nuevaCantidad === undefined || nuevaCantidad <= 0) {
+    if (!id || nuevaCantidad <= 0) {
         console.error("ID o cantidad inválida:", id, nuevaCantidad);
         return;
     }
@@ -70,7 +60,7 @@ async function actualizarCantidad(id, nuevaCantidad) {
         const response = await fetch(`/api/carrito/actualizar/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify({ cantidad: parseInt(nuevaCantidad, 10) })
+            body: JSON.stringify({ accesorio: { id }, cantidad: parseInt(nuevaCantidad, 10) })
         });
 
         if (!response.ok) throw new Error(`Error al actualizar cantidad de ID ${id}`);
@@ -82,7 +72,7 @@ async function actualizarCantidad(id, nuevaCantidad) {
     }
 }
 
-// ⚪️ Eliminar un producto del carrito
+// 🔹 Eliminar un producto del carrito
 async function eliminarDelCarrito(id) {
     if (!id) {
         console.error("Intento de eliminar con ID inválido:", id);
@@ -104,7 +94,7 @@ async function eliminarDelCarrito(id) {
     }
 }
 
-// ⚪️ Procesar compra
+// 🔹 Procesar compra
 document.getElementById("procesar-compra").addEventListener("click", async function () {
     try {
         const response = await fetch('/api/carrito/procesar', {
@@ -122,7 +112,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
     }
 });
 
-// ⚪️ Obtener encabezados para las solicitudes
+// 🔹 Obtener encabezados para las solicitudes
 function getHeaders() {
     return {
         'Accept': 'application/json',
