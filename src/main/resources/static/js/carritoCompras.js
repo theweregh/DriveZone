@@ -32,12 +32,12 @@ function mostrarCarrito(carrito) {
         const fila = document.createElement("tr");
         fila.innerHTML = `
             <td>${accesorio.nombre}</td>
-            <td>$${accesorio.precioVenta.toFixed(2)}</td>
+            <td>$${accesorio.precioVenta.toLocaleString("es-CO")}</td>
             <td>
                 <input type="number" value="${cantidad}" min="1"
                     onchange="actualizarCantidad(${accesorio.id}, this.value)">
             </td>
-            <td>$${subtotal.toFixed(2)}</td>
+            <td>$${subtotal.toLocaleString("es-CO")}</td>
             <td>
                 <button onclick="eliminarDelCarrito(${accesorio.id})">❌</button>
             </td>
@@ -46,10 +46,10 @@ function mostrarCarrito(carrito) {
         listaCarrito.appendChild(fila);
     });
 
-    totalCarrito.innerText = `$${total.toFixed(2)}`;
+    // ✅ Corrección: Solo un "$" y "COP" al final
+    totalCarrito.innerText = total.toLocaleString("es-CO") + " COP";
 }
-
-// 🔹 Actualizar cantidad de un producto en el carrito
+// 🔹 Validar stock antes de actualizar cantidad
 async function actualizarCantidad(id, nuevaCantidad) {
     if (!id || nuevaCantidad <= 0) {
         console.error("ID o cantidad inválida:", id, nuevaCantidad);
@@ -57,21 +57,46 @@ async function actualizarCantidad(id, nuevaCantidad) {
     }
 
     try {
+        // Obtener el carrito para validar el stock disponible
+        const carritoResponse = await fetch('/api/carrito', { headers: getHeaders() });
+        if (!carritoResponse.ok) throw new Error("Error al obtener el carrito");
+
+        const carrito = await carritoResponse.json();
+        const item = carrito.find(producto => producto.accesorio.id === id);
+
+        if (!item) {
+            console.error(`El producto con ID ${id} no está en el carrito`);
+            return;
+        }
+
+        let cantidadFinal = parseInt(nuevaCantidad, 10);
+
+        if (cantidadFinal > item.accesorio.stock) {
+            cantidadFinal = item.accesorio.stock; // Ajustar al máximo stock disponible
+            alert(`No hay suficiente stock disponible. Se ajustó la cantidad a ${cantidadFinal}`);
+        }
+
+        // Actualizar el input en el frontend para reflejar la cantidad corregida
+        document.querySelector(`input[onchange="actualizarCantidad(${id}, this.value)"]`).value = cantidadFinal;
+
+        // Si la cantidad ya es la misma, no hacer la petición
+        if (cantidadFinal === item.cantidad) return;
+
+        // Si la cantidad es válida, se actualiza el carrito
         const response = await fetch(`/api/carrito/actualizar/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify({ accesorio: { id }, cantidad: parseInt(nuevaCantidad, 10) })
+            body: JSON.stringify({ accesorio: { id }, cantidad: cantidadFinal })
         });
 
         if (!response.ok) throw new Error(`Error al actualizar cantidad de ID ${id}`);
 
-        console.log(`Cantidad actualizada: ${nuevaCantidad}`);
+        console.log(`Cantidad ajustada y actualizada: ${cantidadFinal}`);
         cargarCarrito();
     } catch (error) {
         console.error("Error en actualizarCantidad:", error);
     }
 }
-
 // 🔹 Eliminar un producto del carrito
 async function eliminarDelCarrito(id) {
     if (!id) {
