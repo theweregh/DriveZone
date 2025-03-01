@@ -1,17 +1,17 @@
 $(document).ready(function() {
     cargarUsuarios();
+    actualizarEmailDelUsuario();
 });
-
+function actualizarEmailDelUsuario(){
+    document.getElementById('txt-email-usuario').outerHTML = localStorage.email;
+}
 let usuariosCargados = [];
 let dataTable; // Instancia de DataTables
 
 async function cargarUsuarios() {
     const request = await fetch('api/usuarios', {
         method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
+        headers: getHeaders()
     });
 
     usuariosCargados = await request.json();
@@ -71,19 +71,22 @@ document.getElementById('busqueda').addEventListener('input', function () {
 
     actualizarTabla(usuariosFiltrados);
 });
-
+function getHeaders(){
+    return {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.token
+    };
+}
 // 🔹 Función para eliminar usuario
 async function eliminarUsuario(id) {
     if (!confirm('¿Está seguro de dar de baja el usuario?')) {
         return;
     }
 
-    await fetch(`api/usuarios/${id}`, {
+    await fetch('api/usuarios/'+ id, {
         method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
+        headers: getHeaders()
     });
 
     cargarUsuarios(); // Recargar la tabla tras eliminar usuario
