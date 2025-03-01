@@ -12,5 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class CarritoCompra {
 
-    List<Accesorio> list;
+    Accesorio Accesorio;
+    int cantidad;
 }

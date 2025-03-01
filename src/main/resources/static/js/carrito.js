@@ -1,5 +1,6 @@
 $(document).ready(function() {
     cargarAccesorios();
+    actualizarContadorCarrito();
 });
 
 let accesoriosCargados = [];
@@ -60,11 +61,44 @@ function getHeaders() {
     return {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': localStorage.token
+        'Authorization': localStorage.token || ''
     };
 }
 
-// 🔹 Función de carrito (ajústala si la necesitas)
-function agregarAlCarrito(id, nombre, precio) {
-    alert(`Añadido: ${nombre} - $${precio}`);
+// 🔹 Agregar accesorio al carrito
+async function agregarAlCarrito(id, nombre, precio) {
+    const cantidad = parseInt(document.getElementById(`cantidad-${id}`).value);
+    if (cantidad <= 0) {
+        alert("La cantidad debe ser mayor a 0.");
+        return;
+    }
+
+    const accesorio = { id, nombre, precioVenta: precio, cantidad };
+
+    const response = await fetch('/api/carrito/agregar', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(accesorio)
+    });
+
+    if (response.ok) {
+        actualizarContadorCarrito();
+        alert(`Añadido: ${nombre} x${cantidad} - $${precio * cantidad}`);
+    } else {
+        alert("Error al agregar al carrito");
+    }
+}
+
+// 🔹 Actualizar contador del carrito
+async function actualizarContadorCarrito() {
+    const response = await fetch('/api/carrito', { headers: getHeaders() });
+    if (response.ok) {
+        const accesorios = await response.json();
+        document.getElementById("contador-carrito").innerText = accesorios.length;
+    }
+}
+
+// 🔹 Ir al carrito de compras
+function irAlCarrito() {
+    window.location.href = "carrito.html"; // Ajusta la ruta si es diferente
 }

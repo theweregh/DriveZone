@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - DriveZone</title>
+    <link rel="stylesheet" href="styleCarrito.css">
+</head>
+<body>
+
+    <header>
+        <h1>Carrito de Compras</h1>
+        <a href="index.html">← Volver a la tienda</a>
+    </header>
+
+    <main>
+        <div id="carrito-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="carrito-lista">
+                    <!-- Productos agregados al carrito se mostrarán aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="carrito-total">
+            <h2>Total: $<span id="total-carrito">0</span></h2>
+            <button id="procesar-compra">Proceder con la compra</button>
+        </div>
+    </main>
+
+    <script src="js/carritoCompras.js"></script>
+</body>
+</html>
