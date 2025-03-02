@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Factura</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="generarFactura">Generar Factura</button>
+
+    <script>
+        document.getElementById("generarFactura").addEventListener("click", function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Datos de la factura (puedes modificarlos dinámicamente)
+            let empresa = "DriveZone";
+            let cliente = "Juan Pérez";
+            let direccion = "Calle Falsa 123";
+            let productos = [
+                { nombre: "Aceite de motor", cantidad: 2, precio: 50 },
+                { nombre: "Filtro de aire", cantidad: 1, precio: 30 }
+            ];
+            
+            let y = 20;
+            doc.setFont("helvetica", "bold");
+            doc.text("Factura", 90, y);
+            
+            doc.setFont("helvetica", "normal");
+            y += 10;
+            doc.text(`Empresa: ${empresa}`, 10, y);
+            y += 7;
+            doc.text(`Cliente: ${cliente}`, 10, y);
+            y += 7;
+            doc.text(`Dirección: ${direccion}`, 10, y);
+            y += 10;
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Productos:", 10, y);
+            y += 7;
+            doc.setFont("helvetica", "normal");
+
+            let total = 0;
+            productos.forEach((producto) => {
+                doc.text(`${producto.nombre} - Cantidad: ${producto.cantidad} - Precio: $${producto.precio}`, 10, y);
+                y += 7;
+                total += producto.cantidad * producto.precio;
+            });
+
+            y += 10;
+            doc.setFont("helvetica", "bold");
+            doc.text(`Total: $${total}`, 10, y);
+
+            // Guardar el archivo PDF
+            doc.save("factura.pdf");
+        });
+    </script>
+</body>
+</html>
