@@ -21,7 +21,7 @@ let datos = {
         if (datos.correo.endsWith("@drivezone.com")) {
         window.location.href = "buscarUsuario.html";
         } else {
-            window.location.href = "clientes.html";
+            window.location.href = "carritoCompra.html";
         }
     }else{
         alert('Usuario o contraseña incorrectos');
