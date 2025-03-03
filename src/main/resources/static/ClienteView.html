@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Cliente</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+    <h2 class="text-center mb-4">Buscar Cliente</h2>
+    
+    <!-- Campo de búsqueda -->
+    <div class="input-group mb-3">
+        <input type="text" id="criterioBusqueda" class="form-control" placeholder="Ingrese nombre o identificación">
+        <button onclick="buscarCliente()" class="btn btn-primary">Buscar</button>
+    </div>
+    
+    <!-- Tabla para mostrar resultados -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cédula</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tablaClientes"></tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarClientes();
+        });
+
+        function cargarClientes() {
+            fetch('/clientes')
+                .then(response => response.json())
+                .then(data => mostrarClientes(data))
+                .catch(error => console.error("Error cargando clientes:", error));
+        }
+
+        function buscarCliente() {
+            let filtro = document.getElementById("criterioBusqueda").value.trim();
+            
+            if (filtro === "") {
+                cargarClientes(); // Si está vacío, recargar la lista completa
+                return;
+            }
+
+            fetch(`/clientes/buscar?criterio=${encodeURIComponent(filtro)}`)
+                .then(response => response.json())
+                .then(data => mostrarClientes(data))
+                .catch(error => console.error("Error buscando clientes:", error));
+        }
+
+        function mostrarClientes(clientes) {
+            let tabla = document.getElementById("tablaClientes");
+            tabla.innerHTML = "";
+            clientes.forEach(cliente => {
+                let row = `<tr>
+                    <td>${cliente.id}</td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.apellido}</td>
+                    <td>${cliente.cedula}</td>
+                    <td>${cliente.direccion}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.estado ? 'Activo' : 'Inactivo'}</td>
+                </tr>`;
+                tabla.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html>
