@@ -11,18 +11,27 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class Accesorio {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    int id;
+    @Column(name = "idAccesorio")
+    private int id;
+
     @Column(name = "nombre")
     String nombre;
+
     @Column(name = "descripcion")
     String descripcion;
+
     @Column(name = "stock")
-    int stock;
+    private int stock;
+
     @Column(name = "precioVenta")
-    double precioVenta;
+    private double precioVenta;
+
     @Column(name = "imagen")
-    String imagen;
+    private String imagen;
+
+    @Column(name = "descuento")
+    private double descuento;
 }

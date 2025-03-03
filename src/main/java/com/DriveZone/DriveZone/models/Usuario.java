@@ -14,16 +14,16 @@ public class Usuario {
     // Identificador, nombre de usuario, nombres y apellidos, cédula, Correo, dirección y teléfono.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "idUsuario")
     private int id;
 
     @Column(name = "username")
     private String username;
 
-    @Column(name = "nombre")
+    @Column(name = "nombreRazonSocial")
     private String nombres;
 
-    @Column(name = "cedula")
+    @Column(name = "identificacion")
     private String cedula;
 
      @Column(name = "correo")
@@ -37,5 +37,11 @@ public class Usuario {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "estado")
+    private String estado;
+
+    @Column(name = "rol")
+    private String rol;
 
 }

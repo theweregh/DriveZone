@@ -1,30 +1,53 @@
 $(document).ready(function() {
-//on ready
+    // Esperar que el documento esté listo
 });
-async function registrarUsuarios(){
-let datos = {
-    username: document.getElementById('txtUserName').value,
-    nombres: document.getElementById('txtNombre').value,
-    cedula: document.getElementById('txtCedula').value,
-    correo: document.getElementById('txtCorreo').value,
-    direccion: document.getElementById('txtDirreccion').value,
-    telefono: document.getElementById('txtTelefono').value,
-    password: document.getElementById('txtPassword').value,
-}
-let repetirPassword = document.getElementById('txtRepeatPassword').value;
 
-if(datos.password != repetirPassword){
-    alert('Las contraseñas no coinciden');
-    return;
-}
-  const request = await fetch('api/usuarios', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-        body: JSON.stringify(datos)
+async function registrarUsuarios() {
+    let datos = {
+        username: document.getElementById('txtUserName').value.trim(),
+        nombres: document.getElementById('txtNombre').value.trim(),
+        cedula: document.getElementById('txtCedula').value.trim(),
+        correo: document.getElementById('txtCorreo').value.trim(),
+        direccion: document.getElementById('txtDireccion').value.trim(),
+        telefono: document.getElementById('txtTelefono').value.trim(),
+        password: document.getElementById('txtPassword').value,
+        estado: document.getElementById('selectEstado').value,
+        rol: document.getElementById('selectRol').value
+    };
+
+    let repetirPassword = document.getElementById('txtRepeatPassword').value;
+
+    // Validaciones
+    for (let key in datos) {
+        if (datos[key] === "") {
+            alert(`El campo ${key} no puede estar vacío`);
+            return;
+        }
+    }
+
+    if (datos.password !== repetirPassword) {
+        alert('Las contraseñas no coinciden');
+        return;
+    }
+
+    try {
+        const request = await fetch('api/usuarios', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
         });
+
+        if (!request.ok) {
+            throw new Error("Error en el registro");
+        }
+
         alert('Usuario registrado correctamente');
-        window.location.href = 'login.html'
-  }
+        window.location.href = 'login.html';
+    } catch (error) {
+        alert('Hubo un problema con el registro');
+        console.error(error);
+    }
+}

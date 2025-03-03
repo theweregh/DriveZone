@@ -21,7 +21,7 @@ public class UserController {
 
     @RequestMapping(value = "api/usuarios/{id}")
     public Usuario getUser(@PathVariable int id) {
-        Usuario user = new Usuario(id, "user", "nombre", "cedula", "correo", "direccion", "telefono", "password");
+        Usuario user = new Usuario(id, "user", "nombre", "cedula", "correo", "direccion", "telefono", "password","activo","rol");
         return user;
     }
 

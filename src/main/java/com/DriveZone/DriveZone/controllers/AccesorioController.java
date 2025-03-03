@@ -20,7 +20,7 @@ public class AccesorioController {
     private JWTUtil jwtUtil;
     @RequestMapping(value = "api/accesorio/{id}")
     public Accesorio getAccesorio(@PathVariable int id) {
-        Accesorio accesorio = new Accesorio(10,"steering wheel","color rojo maranello",1,12500D,"xd.png");
+        Accesorio accesorio = new Accesorio(10,"steering wheel","color rojo maranello",1,12500D,"xd.png",0.8);
         return accesorio;
     }
 
