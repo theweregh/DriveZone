@@ -47,4 +47,13 @@ public class UsuarioDaoImp  implements UsuarioDao{
         }
         return null;
     }
+
+    @Override
+    public void actualizarUsuario(Usuario usuario) {
+        entityManager.merge(usuario);
+    }
+    @Override
+    public Usuario getUserById(int id) {
+        return entityManager.find(Usuario.class, id);
+    }
 }

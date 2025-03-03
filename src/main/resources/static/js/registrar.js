@@ -45,7 +45,7 @@ async function registrarUsuarios() {
         }
 
         alert('Usuario registrado correctamente');
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     } catch (error) {
         alert('Hubo un problema con el registro');
         console.error(error);

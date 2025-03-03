@@ -51,9 +51,25 @@ public class UserController {
         usuarioDao.deleteUser(id);
 
     }
-    private boolean validarToken(String token){
+
+    @RequestMapping(value = "api/usuarios/{id}/estado", method = RequestMethod.PUT)
+    public void updateEstado(@RequestHeader(value = "Authorization") String token,
+                             @PathVariable int id,
+                             @RequestBody Usuario usuario) {
+        if (!validarToken(token)) {
+            return;
+        }
+
+        Usuario userExistente = usuarioDao.getUserById(id);
+        if (userExistente != null) {
+            userExistente.setEstado(usuario.getEstado());
+            usuarioDao.actualizarUsuario(userExistente);
+        }
+    }
+
+    private boolean validarToken(String token) {
         String userId = jwtUtil.getKey(token);
-        //se puede verificar si este user esta en la db
         return userId != null;
     }
+
 }
