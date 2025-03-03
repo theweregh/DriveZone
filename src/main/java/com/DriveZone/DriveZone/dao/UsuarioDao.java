@@ -14,4 +14,6 @@ public interface UsuarioDao {
     Usuario obtenerUsuarioPorCredenciales(Usuario usuario);
     Usuario getUserById(int id); // Nuevo método para obtener usuario por ID
     void actualizarUsuario(Usuario usuario); // Nuevo método para actualizar el usuario
+
+    Usuario obtenerUsuarioPorCorreo(String correo);
 }

@@ -56,4 +56,10 @@ public class UsuarioDaoImp  implements UsuarioDao{
     public Usuario getUserById(int id) {
         return entityManager.find(Usuario.class, id);
     }
+@Override
+public Usuario obtenerUsuarioPorCorreo(String correo) {
+    String query = "FROM Usuario WHERE correo = :correo";
+    List<Usuario> lista = entityManager.createQuery(query).setParameter("correo", correo).getResultList();
+    return lista.isEmpty() ? null : lista.get(0);
+}
 }

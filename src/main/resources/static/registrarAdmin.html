@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de Usuario</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Crear una Cuenta</h1>
+                            </div>
+                            <form class="user">
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3">
+                                        <input type="text" class="form-control form-control-user" id="txtNombre" placeholder="Nombre">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-user" id="txtUserName" placeholder="Nombre de Usuario">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3">
+                                        <input type="text" class="form-control form-control-user" id="txtCedula" placeholder="Cédula">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-user" id="txtDireccion" placeholder="Dirección">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3">
+                                        <input type="text" class="form-control form-control-user" id="txtTelefono" placeholder="Teléfono">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="email" class="form-control form-control-user" id="txtCorreo" placeholder="Correo Electrónico">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3">
+                                        <input type="password" class="form-control form-control-user" id="txtPassword" placeholder="Contraseña">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="password" class="form-control form-control-user" id="txtRepeatPassword" placeholder="Repetir Contraseña">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3">
+                                        <select class="form-control form-control-user" id="selectEstado">
+                                            <option value="Activo">Activo</option>
+                                            <option value="Inactivo">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <select class="form-control form-control-user" id="selectRol">
+                                            <option value="Administrativo">Usuario</option>
+                                            <option value="Cliente">Administrador</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="registrarUsuarios()" class="btn btn-primary btn-user btn-block">
+                                    Registrar Cuenta
+                                </button>
+                                <hr>
+                            </form>
+                            <div class="text-center">
+                                <a class="small" href="buscarUsuario.html">regresar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/registrar.js"></script>
+</body>
+</html>

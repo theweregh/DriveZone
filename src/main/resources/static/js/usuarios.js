@@ -205,5 +205,5 @@ function modificarUsuario(id) {
 }
 
 function agregarUsuario() {
-    alert('Función para agregar un nuevo usuario.');
+    window.location.href = "registrarAdmin.html";
 }

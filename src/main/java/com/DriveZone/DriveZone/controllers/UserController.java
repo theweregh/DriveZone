@@ -71,5 +71,8 @@ public class UserController {
         String userId = jwtUtil.getKey(token);
         return userId != null;
     }
-
+    @RequestMapping(value = "api/usuario/{correo}", method = RequestMethod.GET)
+public Usuario obtenerUsuario(@PathVariable String correo) {
+    return usuarioDao.obtenerUsuarioPorCorreo(correo);
+}
 }
