@@ -57,21 +57,23 @@
         }
 
         function mostrarClientes(clientes) {
-            let tabla = document.getElementById("tablaClientes");
-            tabla.innerHTML = "";
-            clientes.forEach(cliente => {
-                let row = `<tr>
-                    <td>${cliente.id}</td>
-                    <td>${cliente.nombre}</td>
-                    <td>${cliente.apellido}</td>
-                    <td>${cliente.cedula}</td>
-                    <td>${cliente.direccion}</td>
-                    <td>${cliente.telefono}</td>
-                    <td>${cliente.estado ? 'Activo' : 'Inactivo'}</td>
-                </tr>`;
-                tabla.innerHTML += row;
-            });
-        }
+    console.log("Clientes recibidos:", clientes); // 🛠️ Ver qué datos llegan al frontend
+    let tabla = document.getElementById("tablaClientes");
+    tabla.innerHTML = "";
+    clientes.forEach(cliente => {
+        let row = `<tr>
+            <td>${cliente.idCliente}</td>  <!-- Asegurar que la clave es correcta -->
+            <td>${cliente.nombre}</td>
+            <td>${cliente.apellido}</td>
+            <td>${cliente.cedula}</td>
+            <td>${cliente.direccion}</td>
+            <td>${cliente.telefono}</td>
+            <td>${cliente.estado ? 'Activo' : 'Inactivo'}</td>
+        </tr>`;
+        tabla.innerHTML += row;
+    });
+}
+
     </script>
 </body>
 </html>
