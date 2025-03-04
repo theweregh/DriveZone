@@ -9,10 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 public class CarritoCompra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,33 +18,15 @@ public class CarritoCompra {
     private int id;
     @Column(name = "cantidad", nullable = true)
     int cantidad;
-    /*
-     * @ManyToOne
-     * 
-     * @JoinColumn(name = "Accesorio_idAccesorio", nullable = false)
-     * private Accesorio accesorio;
-     */
-
-    // @ManyToOne de luis
-    // @JoinColumn(name = "Accesorio_idAccesorio", nullable = true) // Permite
-    // valores nulos
-    // private Accesorio accesorio;
-
-    //de yisus
+    /*@ManyToOne
+    @JoinColumn(name = "Accesorio_idAccesorio", nullable = false)
+    private Accesorio accesorio;*/
     @ManyToOne
-    @JoinColumn(name = "Accesorio_idAccesorio", referencedColumnName = "idAccesorio", nullable = true)
+    @JoinColumn(name = "Accesorio_idAccesorio", nullable = true) // Permite valores nulos
     private Accesorio accesorio;
-
-    // @ManyToOne de luis
-    // @JoinColumn(name = "id_usuario", nullable = false)
-    // //@Cascade(CascadeType.PERSIST) // Esto hace que el usuario se guarde junto
-    // con el carrito
-    // @JsonIgnore
-    // private Usuario usuario;
-
-    //de yisus
     @ManyToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "idUsuario") // Relación con Usuario
+    @JoinColumn(name = "id_usuario", nullable = false)
+    //@Cascade(CascadeType.PERSIST) // Esto hace que el usuario se guarde junto con el carrito
+    @JsonIgnore
     private Usuario usuario;
-
 }

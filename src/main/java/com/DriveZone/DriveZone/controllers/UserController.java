@@ -50,9 +50,8 @@ public class UserController {
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         String hash = argon2.hash(1, 1024, 1, usuario.getPassword());
         usuario.setPassword(hash);
-            // Guardar usuario
+        // 🔹 Crear carrito vacío al registrar usuario
         usuarioRepository.save(usuario);
-        
         CarritoCompra carrito = new CarritoCompra();
         //carrito.setAccesorio(new Accesorio());
         carrito.setUsuario(usuario);
