@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 @Entity
@@ -28,10 +29,6 @@ public class OrdenCompra {
     @Column(name = "fecha")
     private Date fecha;
 
-    // Relación con CarritoCompra (Una orden tiene varios productos en el carrito)
-    @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CarritoCompra> carrito;
-
     @Column(name = "subtotal")
     private Double subtotal;
 
@@ -45,6 +42,7 @@ public class OrdenCompra {
     private Double total;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario; // Relación con Usuario
+    @JoinColumn(name = "CarritoCompra_idCarritoCompra", nullable = false)
+    private CarritoCompra carritoCompra;
+
 }

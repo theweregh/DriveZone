@@ -1,7 +1,11 @@
 package com.DriveZone.DriveZone.controllers;
 
+import com.DriveZone.DriveZone.dao.CarritoCompraDao;
+import com.DriveZone.DriveZone.dao.OrdenCompraDao;
 import com.DriveZone.DriveZone.dao.UsuarioDao;
-import com.DriveZone.DriveZone.models.Usuario;
+import com.DriveZone.DriveZone.models.*;
+import com.DriveZone.DriveZone.repository.CarritoRepository;
+import com.DriveZone.DriveZone.repository.UsuarioRepository;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -17,13 +21,19 @@ public class UserController {
     @Autowired
     private UsuarioDao usuarioDao;
     @Autowired
+    private CarritoCompraDao carritoCompraDao;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private CarritoRepository carritoRepository;
+    @Autowired
     private JWTUtil jwtUtil;
-
+    /*
     @RequestMapping(value = "api/usuarios/{id}")
     public Usuario getUser(@PathVariable int id) {
-        Usuario user = new Usuario(id, "user", "nombre", "cedula", "correo", "direccion", "telefono", "password","activo","rol");
+        Usuario user = new Usuario(id, "user", "nombre", "cedula", "correo", "direccion", "telefono", "password", , RolUsuario.EMPLEADO);
         return user;
-    }
+    }*/
 
     @RequestMapping(value = "api/usuarios", method = RequestMethod.GET)
     public List<Usuario> getUsers(@RequestHeader(value="Authorization")String token) {
@@ -40,6 +50,12 @@ public class UserController {
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         String hash = argon2.hash(1, 1024, 1, usuario.getPassword());
         usuario.setPassword(hash);
+        // 🔹 Crear carrito vacío al registrar usuario
+        usuarioRepository.save(usuario);
+        CarritoCompra carrito = new CarritoCompra();
+        //carrito.setAccesorio(new Accesorio());
+        carrito.setUsuario(usuario);
+        carritoRepository.save(carrito);
         usuarioDao.registrar(usuario);
     }
 

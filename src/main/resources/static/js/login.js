@@ -66,12 +66,12 @@ async function iniciarSesion() {
             window.location.href = "CarritoCompra.html";
         } else if (usuario.rol === "Empleado") {
             window.location.href = "CarritoCompra.html";
-        }else {
-            window.location.href = "CarritoCompra.html";
         }
         } else {
+            window.location.href = "CarritoCompra.html";
+        }/*else {
             alert("Rol no reconocido: " + usuario.rol);
-        }
+        }*/
     } else {
         alert('Usuario o contraseña incorrectos');
     }

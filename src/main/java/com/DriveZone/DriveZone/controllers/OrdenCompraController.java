@@ -1,40 +1,36 @@
 package com.DriveZone.DriveZone.controllers;
 
-import com.DriveZone.DriveZone.dao.OrdenCompraDao;
+
+import com.DriveZone.DriveZone.dao.OrdenCompraDaoImp;
 import com.DriveZone.DriveZone.models.OrdenCompra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/ordenes")
+@RequestMapping("/ordenes-compra")
 public class OrdenCompraController {
     @Autowired
-    private OrdenCompraDao ordenCompraDao;
+    private OrdenCompraDaoImp ordenCompraDao;
 
-    // 🔹 Obtener todas las órdenes
     @GetMapping
-    public List<OrdenCompra> obtenerOrdenes() {
-        return ordenCompraDao.findAll();
+    public List<OrdenCompra> getOrdenesCompra() {
+        return ordenCompraDao.obtenerTodasLasOrdenes();
     }
 
-    // 🔹 Obtener orden por ID
-    @GetMapping("/OrdenCompra/{id}")
-    public Optional<OrdenCompra> obtenerOrden(@PathVariable int id) {
-        return ordenCompraDao.findById(id);
+    @GetMapping("/{id}")
+    public OrdenCompra getOrdenCompra(@PathVariable int id) {
+        return ordenCompraDao.obtenerOrdenPorId(id).get();
     }
 
-    // 🔹 Crear una nueva orden
     @PostMapping
-    public OrdenCompra crearOrden(@RequestBody OrdenCompra orden) {
-        return ordenCompraDao.save(orden);
+    public void registrarOrden(@RequestBody OrdenCompra ordenCompra) {
+        ordenCompraDao.guardarOrden(ordenCompra);
     }
 
-    // 🔹 Eliminar orden por ID
-    @DeleteMapping("/OrdenCompra/{id}")
-    public void eliminarOrden(@PathVariable int id) {
-        ordenCompraDao.deleteById(id);
+    @DeleteMapping("/{id}")
+    public void deleteOrdenCompra(@PathVariable int id) {
+        ordenCompraDao.eliminarOrden(id);
     }
 }

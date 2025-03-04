@@ -3,6 +3,10 @@ $(document).ready(function() {
 });
 
 async function registrarUsuarios() {
+    if(document.getElementById('txtPassword').value.length < 8){
+        alert('La contraseña debe tener al menos 8 caracteres');
+
+    }
     let datos = {
         username: document.getElementById('txtUserName').value.trim(),
         nombres: document.getElementById('txtNombre').value.trim(),

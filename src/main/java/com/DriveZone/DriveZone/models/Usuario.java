@@ -1,10 +1,13 @@
 package com.DriveZone.DriveZone.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -44,4 +47,13 @@ public class Usuario {
     @Column(name = "rol")
     private String rol;
 
+    //@OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CarritoCompra> carritos;
+
+    public Usuario(int usuarioId) {
+        this.id = usuarioId;
+    }
 }
+
