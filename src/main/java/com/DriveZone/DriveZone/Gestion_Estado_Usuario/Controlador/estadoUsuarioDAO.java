@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class estadoUsuarioDAO {
-    private Connection conexion;
+    /*private Connection conexion;
 
     public estadoUsuarioDAO() throws SQLException {
         String url = "jdbc:mysql://localhost:3306/DriveZone";
@@ -50,5 +50,5 @@ public class estadoUsuarioDAO {
             int filasActualizadas = stmt.executeUpdate();
             return filasActualizadas > 0;
         }
-    }
+    }*/
 }

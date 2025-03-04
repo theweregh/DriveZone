@@ -11,7 +11,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")  // Permite llamadas desde JavaScript en el navegador
 public class ClienteController {
 
-    private final ClienteDAO clienteDAO;
+    /*private final ClienteDAO clienteDAO;
 
     public ClienteController() throws SQLException {
         this.clienteDAO = new ClienteDAO();
@@ -25,5 +25,5 @@ public class ClienteController {
     @GetMapping("/buscar")
     public List<Cliente> buscarClientes(@RequestParam String criterio) throws SQLException {
         return clienteDAO.buscarClientes(criterio); // Retorna clientes filtrados
-    }
+    }*/
 }

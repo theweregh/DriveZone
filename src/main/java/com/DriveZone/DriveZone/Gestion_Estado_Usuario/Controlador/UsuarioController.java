@@ -11,7 +11,7 @@ import java.util.List;
 @RequestMapping("/usuarios")
 @CrossOrigin(origins = "*")  // Permite llamadas desde JavaScript en el navegador
 public class UsuarioController {
-
+/*
     private final estadoUsuarioDAO usuarioDAO;
 
     public UsuarioController() throws SQLException {
@@ -31,5 +31,5 @@ public class UsuarioController {
     @PostMapping("/actualizarEstado")
     public String actualizarEstado(@RequestParam int id, @RequestParam String nuevoEstado) throws SQLException {
         return usuarioDAO.actualizarEstado(id, nuevoEstado) ? "Estado actualizado" : "Error al actualizar";
-    }
+    }*/
 }
