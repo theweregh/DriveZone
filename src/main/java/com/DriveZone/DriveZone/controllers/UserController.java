@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -153,4 +155,62 @@ public ResponseEntity<String> registrarBusqueda(@RequestHeader(value="Authorizat
 
     return ResponseEntity.ok("Búsqueda registrada correctamente.");
 }
+/*@RequestMapping(value = "api/usuarios/{id}", method = RequestMethod.PUT)
+public ResponseEntity<String> actualizarUsuario(@RequestHeader(value="Authorization") String token,
+                                                @PathVariable int id,
+                                                @RequestBody Usuario usuarioActualizado) {
+    if (!validarToken(token)) {
+        return ResponseEntity.status(401).body("No autorizado");
+    }
+
+    Usuario usuarioExistente = usuarioDao.getUserById(id);
+    if (usuarioExistente == null) {
+        return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+
+    // Actualizar datos
+    usuarioExistente.setUsername(usuarioActualizado.getUsername());
+    usuarioExistente.setNombres(usuarioActualizado.getNombres());
+    usuarioExistente.setCedula(usuarioActualizado.getCedula());
+    usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
+    usuarioExistente.setDireccion(usuarioActualizado.getDireccion());
+    usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
+    usuarioExistente.setRol(usuarioActualizado.getRol());
+
+    usuarioDao.actualizarUsuario(usuarioExistente);
+
+    return ResponseEntity.ok("Usuario actualizado correctamente.");
+}*/
+    @RequestMapping(value = "api/usuarios/{id}", method = RequestMethod.PUT)
+public ResponseEntity<String> actualizarUsuario(@RequestHeader(value="Authorization") String token,
+                                                @PathVariable int id,
+                                                @RequestBody Usuario usuarioActualizado) {
+    if (!validarToken(token)) {
+        return ResponseEntity.status(401).body("No autorizado");
+    }
+
+    Usuario usuarioExistente = usuarioDao.getUserById(id);
+    if (usuarioExistente == null) {
+        return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+
+    try {
+        // Actualizar datos
+        usuarioExistente.setUsername(usuarioActualizado.getUsername());
+        usuarioExistente.setNombres(usuarioActualizado.getNombres());
+        usuarioExistente.setCedula(usuarioActualizado.getCedula());
+        usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
+        usuarioExistente.setDireccion(usuarioActualizado.getDireccion());
+        usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
+        usuarioExistente.setRol(usuarioActualizado.getRol());
+
+        usuarioDao.actualizarUsuario(usuarioExistente);
+
+        return ResponseEntity.ok("Usuario actualizado correctamente.");
+
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error interno al actualizar usuario.");
+    }
+}
+
 }

@@ -56,7 +56,65 @@
         </thead>
         <tbody></tbody>
     </table>
+    <!-- MODAL PARA MODIFICAR USUARIO -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarUsuarioLabel">Modificar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarUsuario">
+                    <input type="hidden" id="editId">
 
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="editNombres" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCedula" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="editCedula" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCorreo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="editCorreo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDireccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="editDireccion">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTelefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="editTelefono">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRol" class="form-label">Rol</label>
+                        <select class="form-select" id="editRol">
+                            <option value="Administrativo">Administrativo</option>
+                            <option value="Empleado">Empleado</option>
+                            <option value="AsesorVentas">AsesorVentas</option>
+                            <option value="Cliente">Cliente</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEstado" class="form-label">Estado</label>
+                        <select class="form-select" id="editEstado">
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                            <option value="fueraServicio">FueraServicio</option>
+                        </select>
+                    </div>
+                    <button id="btnGuardarCambios" type="submit" class="btn btn-success">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="js/usuarios.js"></script>
 </body>
 </html>
