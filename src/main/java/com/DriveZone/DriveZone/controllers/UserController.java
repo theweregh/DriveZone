@@ -10,6 +10,7 @@ import com.DriveZone.DriveZone.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class UserController {
         return usuarioDao.getUsers();
     }
 
-    @RequestMapping(value = "api/usuarios", method = RequestMethod.POST)
+    /*@RequestMapping(value = "api/usuarios", method = RequestMethod.POST)
     public void registerUser(@RequestBody Usuario usuario) {
 
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
@@ -57,8 +58,36 @@ public class UserController {
         carrito.setUsuario(usuario);
         carritoRepository.save(carrito);
         usuarioDao.registrar(usuario);
+    }*/
+    @RequestMapping(value = "api/usuarios", method = RequestMethod.POST)
+public ResponseEntity<String> registerUser(@RequestBody Usuario usuario) {
+
+    // Verificar si el usuario o el correo ya están registrados
+    if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+        return ResponseEntity.badRequest().body("❌ El nombre de usuario ya está en uso.");
     }
 
+    if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
+        return ResponseEntity.badRequest().body("❌ El correo electrónico ya está registrado.");
+    }
+
+    // Hash de la contraseña
+    Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+    String hash = argon2.hash(1, 1024, 1, usuario.getPassword());
+    usuario.setPassword(hash);
+
+    // Guardar usuario en la base de datos
+    usuarioRepository.save(usuario);
+
+    // Crear carrito vacío al registrar usuario
+    CarritoCompra carrito = new CarritoCompra();
+    carrito.setUsuario(usuario);
+    carritoRepository.save(carrito);
+
+    usuarioDao.registrar(usuario);
+
+    return ResponseEntity.ok("✅ Usuario registrado correctamente.");
+}
     @RequestMapping(value = "api/usuarios/{id}", method = RequestMethod.DELETE)
     public void deleteUser(@RequestHeader(value="Authorization")String token,@PathVariable String id) {
          if(!validarToken(token)){
