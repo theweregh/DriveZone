@@ -1,7 +1,8 @@
-// registrar.js - Registro de clientes
-
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("btnRegistrar").addEventListener("click", registrarCliente);
+    const btnRegistrar = document.getElementById("btnRegistrar");
+    if (btnRegistrar) {
+        btnRegistrar.addEventListener("click", registrarCliente);
+    }
 });
 
 async function registrarCliente() {
@@ -11,7 +12,7 @@ async function registrarCliente() {
         cedula: document.getElementById('txtCedula').value.trim(),
         direccion: document.getElementById('txtDireccion').value.trim(),
         telefono: document.getElementById('txtTelefono').value.trim(),
-        estado: true // Por defecto activo
+        estado: true
     };
 
     // Validaciones

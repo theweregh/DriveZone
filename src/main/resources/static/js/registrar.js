@@ -119,3 +119,6 @@ async function registrarUsuarios() {
         console.error(error);
     }
 }
+
+
+
