@@ -4,20 +4,19 @@ import com.DriveZone.DriveZone.dao.AccesorioDao;
 import com.DriveZone.DriveZone.dao.CarritoCompraDao;
 import com.DriveZone.DriveZone.dao.OrdenCompraDaoImp;
 import com.DriveZone.DriveZone.dao.UsuarioDao;
-import com.DriveZone.DriveZone.models.Accesorio;
-import com.DriveZone.DriveZone.models.CarritoCompra;
-import com.DriveZone.DriveZone.models.OrdenCompra;
-import com.DriveZone.DriveZone.models.Usuario;
+import com.DriveZone.DriveZone.models.*;
 import com.DriveZone.DriveZone.utils.JWTUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.text.MessageFormat;
 @RestController
 @RequestMapping("/api/carrito")
 public class CarritoController {
@@ -28,7 +27,7 @@ public class CarritoController {
     private AccesorioDao accesorioDao;
     @Autowired
     private JWTUtil jwtUtil;
-
+    private static final Logger logger = LoggerFactory.getLogger(CarritoController.class);
     public CarritoController(CarritoCompraDao carritoCompraDao) {
         this.carritoCompraDao = carritoCompraDao;
     }
@@ -84,7 +83,7 @@ public ResponseEntity<String> agregarAlCarrito(
         return ResponseEntity.ok("Producto agregado al carrito");
     }
 }*/
-    @PostMapping("/agregar")
+    /*@PostMapping("/agregar")
 public ResponseEntity<String> agregarAlCarrito(
         @RequestHeader(value = "Authorization") String token,
         @RequestBody CarritoCompra nuevoProducto) {
@@ -138,8 +137,65 @@ public ResponseEntity<String> agregarAlCarrito(
         carritoCompraDao.save(nuevoProducto);
         return ResponseEntity.ok("✅ Producto agregado al carrito.");
     }
-}
+}*/
+    @PostMapping("/agregar")
+public ResponseEntity<String> agregarAlCarrito(
+        @RequestHeader(value = "Authorization") String token,
+        @RequestBody CarritoCompra nuevoProducto) {
 
+    logger.info("Solicitud para agregar producto al carrito recibida. Token: {}", token);
+
+    // Obtener ID de usuario desde el token
+    String userId = jwtUtil.getKey(token);
+    logger.info("Usuario ID extraído del token: {}", userId);
+
+    // Validar el token antes de continuar
+    if (!validarToken(token)) {
+        logger.warn("Intento de acceso con token inválido.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+    }
+
+    int usuarioId;
+    try {
+        usuarioId = Integer.parseInt(userId);
+    } catch (NumberFormatException e) {
+        logger.error("Error al convertir el ID del usuario: {}", userId, e);
+        return ResponseEntity.badRequest().body("Error: Usuario ID no válido");
+    }
+
+    logger.info("Buscando accesorio con ID: {}", nuevoProducto.getAccesorio().getId());
+    Optional<Accesorio> accesorioOpt = accesorioDao.findById(nuevoProducto.getAccesorio().getId());
+    if (!accesorioOpt.isPresent()) {
+        logger.warn("Accesorio con ID {} no encontrado.", nuevoProducto.getAccesorio().getId());
+        return ResponseEntity.badRequest().body("❌ Error: Accesorio no encontrado.");
+    }
+
+    Accesorio accesorio = accesorioOpt.get();
+    int stockDisponible = accesorio.getStock();
+    logger.info("Stock disponible del accesorio {}: {}", accesorio.getId(), stockDisponible);
+
+    Optional<CarritoCompra> existente = carritoCompraDao.findByUsuarioIdAndAccesorioId(usuarioId, nuevoProducto.getAccesorio().getId());
+    int cantidadEnCarrito = existente.map(CarritoCompra::getCantidad).orElse(0);
+
+    if (cantidadEnCarrito + nuevoProducto.getCantidad() > stockDisponible) {
+        logger.warn("Stock insuficiente para el accesorio {}. Stock: {}, Cantidad solicitada: {}",
+                    accesorio.getId(), stockDisponible, nuevoProducto.getCantidad());
+        return ResponseEntity.badRequest().body("❌ No hay suficiente stock disponible.");
+    }
+
+    if (existente.isPresent()) {
+        CarritoCompra item = existente.get();
+        item.setCantidad(item.getCantidad() + nuevoProducto.getCantidad());
+        carritoCompraDao.save(item);
+        logger.info("Cantidad actualizada en el carrito para el accesorio {}.", accesorio.getId());
+        return ResponseEntity.ok("✅ Cantidad actualizada en el carrito.");
+    } else {
+        nuevoProducto.setUsuario(new Usuario(usuarioId));
+        carritoCompraDao.save(nuevoProducto);
+        logger.info("Producto agregado al carrito. Usuario ID: {}, Accesorio ID: {}", usuarioId, accesorio.getId());
+        return ResponseEntity.ok("✅ Producto agregado al carrito.");
+    }
+}
     // Actualizar cantidad de un producto en el carrito
     /*@PutMapping("/actualizar/{id}")
     public ResponseEntity<String> actualizarCantidad(@PathVariable int id, @RequestBody CarritoCompra productoActualizado) {
@@ -204,7 +260,8 @@ public ResponseEntity<String> actualizarCantidadCarrito(
         carritoCompraDao.deleteById(id);
         return ResponseEntity.ok("Producto eliminado del carrito");
     }*/
-    @DeleteMapping("/eliminar/{accesorioId}")
+
+    /*@DeleteMapping("/eliminar/{accesorioId}")
 public ResponseEntity<String> eliminarDelCarrito(
         @RequestHeader(value = "Authorization") String token,
         @PathVariable int accesorioId) {
@@ -238,6 +295,45 @@ public ResponseEntity<String> eliminarDelCarrito(
         carritoCompraDao.delete(existente.get());
         return ResponseEntity.ok("Producto eliminado del carrito");
     } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado en el carrito");
+    }
+}*/
+
+    @DeleteMapping("/eliminar/{accesorioId}")
+public ResponseEntity<String> eliminarDelCarrito(
+        @RequestHeader(value = "Authorization") String token,
+        @PathVariable int accesorioId) {
+
+    logger.info("Solicitud para eliminar producto del carrito. Token: {}, Accesorio ID: {}", token, accesorioId);
+
+    // Obtener ID de usuario desde el token
+    String userId = jwtUtil.getKey(token);
+    logger.info("Usuario ID extraído: {}", userId);
+
+    if (!validarToken(token)) {
+        logger.warn("Intento de eliminación con token inválido.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+    }
+
+    int usuarioId;
+    try {
+        usuarioId = Integer.parseInt(userId);
+    } catch (NumberFormatException e) {
+        logger.error("Error al convertir el ID del usuario: {}", userId, e);
+        return ResponseEntity.badRequest().body("Error: Usuario ID no válido");
+    }
+
+    List<CarritoCompra> carrito = carritoCompraDao.findByUsuarioId(usuarioId);
+    Optional<CarritoCompra> existente = carrito.stream()
+        .filter(item -> item.getAccesorio() != null && item.getAccesorio().getId() == accesorioId)
+        .findFirst();
+
+    if (existente.isPresent()) {
+        carritoCompraDao.delete(existente.get());
+        logger.info("Producto eliminado del carrito. Usuario ID: {}, Accesorio ID: {}", usuarioId, accesorioId);
+        return ResponseEntity.ok("Producto eliminado del carrito");
+    } else {
+        logger.warn("Intento de eliminación de un producto no existente en el carrito. Usuario ID: {}, Accesorio ID: {}", usuarioId, accesorioId);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado en el carrito");
     }
 }

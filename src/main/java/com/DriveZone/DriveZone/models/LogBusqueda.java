@@ -12,7 +12,7 @@ import java.util.logging.*;
 public class LogBusqueda {
     private static final String LOG_FILE_PATH = "logs/busquedas.log"; // Ruta del archivo de logs
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    private static final Logger LOGGER = Logger.getLogger(LogBusqueda.class.getName());
     public static void registrarBusqueda(String usuario, String criterioBusqueda) {
         try {
             String logMessage = String.format("[%s] Usuario: %s buscó: '%s'%n",
