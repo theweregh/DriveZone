@@ -10,5 +10,6 @@ import java.util.List;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCaseOrCedula(String nombre, String apellido, String cedula);
     List<Cliente> findByNombre(String nombre);
+    List<Cliente> findByCedula(String cedula);
 
 }
