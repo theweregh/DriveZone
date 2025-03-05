@@ -1,0 +1,33 @@
+2025-03-05T12:35:25.439-05:00  INFO 4648 --- [DriveZone] [main] c.D.DriveZone.DriveZoneApplication       : Starting DriveZoneApplication using Java 22.0.1 with PID 4648 (C:\Users\thewe\OneDrive\Escritorio\DriveZone\target\classes started by thewe in C:\Users\thewe\OneDrive\Escritorio\DriveZone)
+2025-03-05T12:35:25.441-05:00  INFO 4648 --- [DriveZone] [main] c.D.DriveZone.DriveZoneApplication       : No active profile set, falling back to 1 default profile: "default"
+2025-03-05T12:35:26.213-05:00  INFO 4648 --- [DriveZone] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-05T12:35:26.332-05:00  INFO 4648 --- [DriveZone] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 108 ms. Found 6 JPA repository interfaces.
+2025-03-05T12:35:27.146-05:00  INFO 4648 --- [DriveZone] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-03-05T12:35:27.160-05:00  INFO 4648 --- [DriveZone] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-03-05T12:35:27.161-05:00  INFO 4648 --- [DriveZone] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-05T12:35:27.216-05:00  INFO 4648 --- [DriveZone] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-03-05T12:35:27.216-05:00  INFO 4648 --- [DriveZone] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1730 ms
+2025-03-05T12:35:27.372-05:00  INFO 4648 --- [DriveZone] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-03-05T12:35:27.519-05:00  INFO 4648 --- [DriveZone] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3d615b2e
+2025-03-05T12:35:27.521-05:00  INFO 4648 --- [DriveZone] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-03-05T12:35:27.577-05:00  INFO 4648 --- [DriveZone] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-05T12:35:27.656-05:00  INFO 4648 --- [DriveZone] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-05T12:35:27.695-05:00  INFO 4648 --- [DriveZone] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-03-05T12:35:28.030-05:00  INFO 4648 --- [DriveZone] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-05T12:35:28.133-05:00  INFO 4648 --- [DriveZone] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.38
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-05T12:35:28.913-05:00  INFO 4648 --- [DriveZone] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-05T12:35:28.915-05:00  INFO 4648 --- [DriveZone] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-05T12:35:29.433-05:00  WARN 4648 --- [DriveZone] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-05T12:35:29.460-05:00  INFO 4648 --- [DriveZone] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2025-03-05T12:35:29.864-05:00  INFO 4648 --- [DriveZone] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-03-05T12:35:29.874-05:00  INFO 4648 --- [DriveZone] [main] c.D.DriveZone.DriveZoneApplication       : Started DriveZoneApplication in 5.077 seconds (process running for 5.554)
+2025-03-05T12:35:41.936-05:00  INFO 4648 --- [DriveZone] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-05T12:35:41.937-05:00  INFO 4648 --- [DriveZone] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-03-05T12:35:41.938-05:00  INFO 4648 --- [DriveZone] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
