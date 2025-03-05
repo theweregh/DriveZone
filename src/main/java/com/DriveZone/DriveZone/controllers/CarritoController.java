@@ -207,7 +207,7 @@ public ResponseEntity<String> agregarAlCarrito(
             return ResponseEntity.ok("Cantidad actualizada");
         }
         return ResponseEntity.badRequest().body("Producto no encontrado en el carrito");
-    }*/
+    }*//*
     @PutMapping("/actualizar")
 public ResponseEntity<String> actualizarCantidadCarrito(
         @RequestHeader(value = "Authorization") String token,
@@ -253,6 +253,68 @@ public ResponseEntity<String> actualizarCantidadCarrito(
     } else {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado en el carrito");
     }
+}*/
+    /*@PutMapping("/actualizar")
+public ResponseEntity<String> actualizarCantidadCarrito(
+        @RequestHeader(value = "Authorization", required = false) String token,
+        @RequestBody CarritoCompra productoActualizado) {
+
+    System.out.println("🔹 Token recibido: " + token);
+    System.out.println("🔹 Producto recibido: " + productoActualizado);
+
+    if (token == null || token.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no proporcionado");
+    }
+
+    String userId = jwtUtil.getKey(token);
+    System.out.println("🔹 Usuario ID extraído: " + userId);
+
+    if (!validarToken(token)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+    }
+
+    if (productoActualizado.getAccesorio() == null /*|| productoActualizado.getAccesorio().getId() == null) {
+        return ResponseEntity.badRequest().body("Error: Accesorio nulo o sin ID");
+    }
+
+    return ResponseEntity.ok("Solicitud válida, verificando en la BD...");
+}*/
+    @PutMapping("/actualizar")
+public ResponseEntity<String> actualizarCantidadCarrito(
+        @RequestHeader(value = "Authorization", required = false) String token,
+        @RequestBody CarritoCompra productoActualizado) {
+
+    System.out.println("🔹 Token recibido: " + token);
+    System.out.println("🔹 Producto recibido: " + productoActualizado);
+
+    if (token == null || token.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no proporcionado");
+    }
+
+    String userId = jwtUtil.getKey(token);
+    System.out.println("🔹 Usuario ID extraído: " + userId);
+
+    if (!validarToken(token)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+    }
+
+    if (productoActualizado.getAccesorio() == null /*|| productoActualizado.getAccesorio().getId() == null*/) {
+        return ResponseEntity.badRequest().body("Error: Accesorio nulo o sin ID");
+    }
+
+    // 🔹 Buscar el producto en el carrito por ID del accesorio y usuario
+    Optional<CarritoCompra> carritoItem = carritoCompraDao.findByUsuarioAndAccesorio_Id(usuarioDao.getUserById(Integer.parseInt(userId)), productoActualizado.getAccesorio().getId());
+
+    if (!carritoItem.isPresent()) {
+        return ResponseEntity.badRequest().body("El producto no está en el carrito");
+    }
+
+    // 🔹 Actualizar la cantidad y guardar
+    CarritoCompra item = carritoItem.get();
+    item.setCantidad(productoActualizado.getCantidad());
+    carritoCompraDao.save(item);  // 🔹 Guardar en la BD
+
+    return ResponseEntity.ok("Cantidad actualizada correctamente");
 }
     // Eliminar producto del carrito
     /*@DeleteMapping("/eliminar/{id}")

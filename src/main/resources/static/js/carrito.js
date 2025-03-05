@@ -200,7 +200,6 @@ async function actualizarContadorCarrito() {
         console.error("❌ Error al actualizar el contador del carrito:", error);
     }
 }
-
 // 🔹 Manejo de paginación
 document.getElementById("prev-page").addEventListener("click", function() {
     if (paginaActual > 1) {
