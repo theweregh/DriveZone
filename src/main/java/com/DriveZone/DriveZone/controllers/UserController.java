@@ -29,6 +29,8 @@ public class UserController {
     private CarritoRepository carritoRepository;
     @Autowired
     private JWTUtil jwtUtil;
+    @Autowired
+    private LogBusqueda logBusquedaService;
     /*
     @RequestMapping(value = "api/usuarios/{id}")
     public Usuario getUser(@PathVariable int id) {
@@ -116,8 +118,39 @@ public ResponseEntity<String> registerUser(@RequestBody Usuario usuario) {
         String userId = jwtUtil.getKey(token);
         return userId != null;
     }
-    @RequestMapping(value = "api/usuario/{correo}", method = RequestMethod.GET)
+    /*@RequestMapping(value = "api/usuario/{correo}", method = RequestMethod.GET)
 public Usuario obtenerUsuario(@PathVariable String correo) {
     return usuarioDao.obtenerUsuarioPorCorreo(correo);
+}*/
+    @RequestMapping(value = "api/usuario/{correo}", method = RequestMethod.GET)
+public Usuario obtenerUsuario(@RequestHeader(value="Authorization") String token, @PathVariable String correo) {
+    if (!validarToken(token)) {
+        return null;
+    }
+
+    // Obtener el usuario autenticado
+    String userId = jwtUtil.getKey(token);
+    Usuario usuarioAutenticado = usuarioDao.getUserById(Integer.parseInt(userId));
+
+    // Registrar la búsqueda en el log
+    logBusquedaService.registrarBusqueda(usuarioAutenticado.getUsername(), correo);
+
+    return usuarioDao.obtenerUsuarioPorCorreo(correo);
+}
+@RequestMapping(value = "api/logs/busqueda", method = RequestMethod.POST)
+public ResponseEntity<String> registrarBusqueda(@RequestHeader(value="Authorization") String token,
+                                                @RequestBody String criterioBusqueda) {
+    if (!validarToken(token)) {
+        return ResponseEntity.status(401).body("No autorizado");
+    }
+
+    // Obtener el usuario autenticado
+    String userId = jwtUtil.getKey(token);
+    Usuario usuarioAutenticado = usuarioDao.getUserById(Integer.parseInt(userId));
+
+    // Guardar la búsqueda en el log
+    logBusquedaService.registrarBusqueda(usuarioAutenticado.getUsername(), criterioBusqueda);
+
+    return ResponseEntity.ok("Búsqueda registrada correctamente.");
 }
 }
