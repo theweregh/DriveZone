@@ -36,3 +36,5 @@ application.properties
 application.yml
 application.yaml
 *.properties
+###Ignorar archivos de logs###
+logs/

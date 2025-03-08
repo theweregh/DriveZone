@@ -6,27 +6,43 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 
+/**
+ * Representa un carrito de compras en el sistema.
+ *
+ * <p>Esta entidad almacena los productos añadidos por un usuario al carrito de compras,
+ * vinculando los accesorios y la cantidad seleccionada.</p>
+ */
 @Entity
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CarritoCompra {
+    /**
+     * Cantidad del accesorio en el carrito
+     */
+    @Column(name = "cantidad", nullable = true)
+    int cantidad;
+    /**
+     * Identificador único del carrito de compras
+     */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCarritoCompra")
     private int id;
-    @Column(name = "cantidad", nullable = true)
-    int cantidad;
-    /*@ManyToOne
-    @JoinColumn(name = "Accesorio_idAccesorio", nullable = false)
-    private Accesorio accesorio;*/
+    /**
+     * Accesorio asociado en el carrito
+     */
     @ManyToOne
     @JoinColumn(name = "Accesorio_idAccesorio", nullable = true) // Permite valores nulos
     private Accesorio accesorio;
+    /**
+     * Usuario propietario del carrito de compras
+     */
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    //@Cascade(CascadeType.PERSIST) // Esto hace que el usuario se guarde junto con el carrito
     @JsonIgnore
     private Usuario usuario;
 }
