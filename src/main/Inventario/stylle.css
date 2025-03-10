@@ -10,12 +10,27 @@
     padding: 20%;
 }
 
+/* BUSCADOR */
+
+.buscador{
+    display: grid;
+    grid-template-columns: 100%;
+    height: 2vw;
+    width: 30vw;
+    margin: 0.8% auto;
+    border: 1px solid #000;
+    border-radius: 15px;
+}
+
+
+/* TABLA INVENTARIO */
+
 .producto1, .producto2, .producto3{
     display: grid;
-    grid-template-columns: 20% 60% 10% 5% ;
+    grid-template-columns: 21% 50% 16% 12% ;
     grid-template-rows: auto;
     border: 1px solid black;
-    padding: 0% 5%;
+    margin: 0% 1%;
 }
 
 
@@ -24,14 +39,14 @@
     justify-content: center; 
     align-items: center; 
     text-align: center;
+    padding: 0;
+    margin: 0;
 }
 
 input {
     background: transparent; 
     border: 1px solid rgba(0, 0, 0, 0); 
-    padding: 5px; 
     width: auto;
-
     text-align: center; 
     font-size: 16px; 
 }
@@ -42,6 +57,66 @@ input:focus {
 
 #cantidad1, #cantidad2, #cantidad3 {
     display: block;
-    margin: 0 auto;
+    margin: 0 0;
     text-align: center;
+}
+
+textarea{
+    background: transparent; 
+    border: 1px solid rgba(0, 0, 0, 0); 
+    width: auto;
+    text-align: center; 
+    font-size: 16px; 
+}
+
+textarea:focus {
+    outline: none; 
+}
+
+/* Boton Actualizar Inventario */
+
+.botonActualizarInventario{
+    width: 40vh;
+    height: 10vh;
+    margin: 1% ;
+}
+/* Ocultar modal por defecto */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilo del contenido del modal */
+.modal-contenido {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+
+/* Botón de cerrar */
+.cerrar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Campos de entrada */
+.campo {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
 }
