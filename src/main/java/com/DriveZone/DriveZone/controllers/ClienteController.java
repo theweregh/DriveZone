@@ -1,106 +1,185 @@
 package com.DriveZone.DriveZone.controllers;
 
+import com.DriveZone.DriveZone.dao.ClienteDao;
 import com.DriveZone.DriveZone.models.Cliente;
-import com.DriveZone.DriveZone.repository.ClienteRepository;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controlador REST para gestionar clientes en el sistema.
  */
 @RestController
 @RequestMapping("/clientes")
-@CrossOrigin(origins = "*")
 public class ClienteController {
+    /*@Autowired
+    private ClienteDao clienteDao;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    @GetMapping
+    public List<Cliente> getClientes() {
+        return clienteDao.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Cliente> getClienteById(@PathVariable int id) {
+        return clienteDao.findById(id);
+    }
+
+    @PostMapping
+    public Cliente createCliente(@RequestBody Cliente cliente) {
+        return clienteDao.save(cliente);
+    }
+
+    @PutMapping("/{id}")
+    public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
+        if (clienteDao.existsById(id)) {
+            cliente.setIdCliente(id);
+            return clienteDao.save(cliente);
+        }
+        return null;
+    }
+@PutMapping("/{id}/desactivar")
+public Cliente desactivarCliente(@PathVariable int id) {
+    Optional<Cliente> optionalCliente = clienteDao.findById(id);
+    if (optionalCliente.isPresent()) {
+        Cliente cliente = optionalCliente.get();
+        cliente.setEstado("inactivo");
+        return clienteDao.save(cliente);
+    }
+    return null;
+}
+
+@PutMapping("/{id}/activar")
+public Cliente activarCliente(@PathVariable int id) {
+    Optional<Cliente> optionalCliente = clienteDao.findById(id);
+    if (optionalCliente.isPresent()) {
+        Cliente cliente = optionalCliente.get();
+        cliente.setEstado("activo");
+        return clienteDao.save(cliente);
+    }
+    return null;
+}*/
+/*@Autowired
+    private ClienteDao clienteDao;
+
     @Autowired
     private JWTUtil jwtUtil;
 
     @GetMapping
-    public List<Cliente> obtenerClientes() {
-        return clienteRepository.findAll();
+    public List<Cliente> getClientes() {
+        return clienteDao.findAll();
     }
 
-    /**
-     * Busca clientes en la base de datos según un criterio (nombre, apellido o cédula).
-     *
-     * @param criterio Texto a buscar en los campos nombre, apellido o cédula.
-     * @return Lista de clientes coincidentes con el criterio de búsqueda.
-     */
-    @GetMapping("/buscar")
-    public List<Cliente> buscarClientes(@RequestParam String criterio) {
-        return clienteRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCaseOrCedula(criterio, criterio, criterio);
-    }
-
-    /**
-     * Registra un nuevo cliente en la base de datos.
-     *
-     * @param cliente Objeto {@link Cliente} a registrar.
-     */
-    @PostMapping("/registro")
-    public void registrarCliente(@RequestBody Cliente cliente) {
-        clienteRepository.save(cliente);
-    }
-
-    /**
-     * Autentica a un cliente con su nombre de usuario y contraseña.
-     *
-     * @param username Nombre de usuario del cliente.
-     * @param password Contraseña del cliente (se compara con la cédula en este caso).
-     * @return Token JWT si la autenticación es exitosa, o un mensaje de error en caso contrario.
-     */
-    @PostMapping("/login")
-    public String autenticarCliente(@RequestParam String username, @RequestParam String password) {
-        List<Cliente> lista = clienteRepository.findByNombre(username);
-        if (lista.isEmpty()) {
-            return "Usuario no encontrado";
-        }
-        Cliente cliente = lista.get(0);
-        if (cliente.getCedula().equals(password)) {
-            return jwtUtil.create(String.valueOf(cliente.getIdCliente()), cliente.getNombre());
-        }
-        return "Credenciales incorrectas";
-    }
-
-    /**
-     * Obtiene un cliente específico por su ID.
-     *
-     * @param id ID del cliente a buscar.
-     * @return Objeto {@link Cliente} si se encuentra, o `null` si no existe.
-     */
     @GetMapping("/{id}")
-    public Cliente obtenerClientePorId(@PathVariable Long id) {
-        return clienteRepository.findById(id).orElse(null);
+    public Optional<Cliente> getClienteById(@PathVariable int id) {
+        return clienteDao.findById(id);
     }
 
-    /**
-     * Actualiza la información de un cliente existente.
-     *
-     * @param id      ID del cliente a actualizar.
-     * @param cliente Objeto {@link Cliente} con la información actualizada.
-     * @return Cliente actualizado o `null` si no se encuentra en la base de datos.
-     */
+    @PostMapping
+    public Cliente createCliente(@RequestBody Cliente cliente) {
+        return clienteDao.save(cliente);
+    }
+
     @PutMapping("/{id}")
-    public Cliente actualizarCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
-        if (clienteRepository.existsById(id)) {
+    public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
+        if (clienteDao.existsById(id)) {
             cliente.setIdCliente(id);
-            return clienteRepository.save(cliente);
+            return clienteDao.save(cliente);
         }
         return null;
     }
 
-    /**
-     * Elimina un cliente de la base de datos.
-     *
-     * @param id ID del cliente a eliminar.
-     */
-    @DeleteMapping("/{id}")
-    public void eliminarCliente(@PathVariable Long id) {
-        clienteRepository.deleteById(id);
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> updateEstado(@RequestHeader(value = "Authorization") String token,
+                                          @PathVariable int id,
+                                          @RequestBody Cliente cliente) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).body("Acceso no autorizado");
+        }
+
+        Optional<Cliente> optionalCliente = clienteDao.findById(id);
+        if (optionalCliente.isPresent()) {
+            Cliente clienteExistente = optionalCliente.get();
+            clienteExistente.setEstado(cliente.getEstado());
+            clienteDao.save(clienteExistente);
+            return ResponseEntity.ok(clienteExistente);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    private boolean validarToken(String token) {
+        String usuarioId = jwtUtil.getKey(token);
+        return usuarioId != null;
+    }*/
+    @Autowired
+    private ClienteDao clienteDao;
+
+    @Autowired
+    private JWTUtil jwtUtil;
+
+    @GetMapping
+    public List<Cliente> getClientes() {
+        return clienteDao.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Cliente> getClienteById(@PathVariable int id) {
+        return clienteDao.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public Cliente createCliente(@RequestBody Cliente cliente) {
+        return clienteDao.save(cliente);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Cliente> updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
+        if (clienteDao.existsById(id)) {
+            cliente.setIdCliente(id);
+            return ResponseEntity.ok(clienteDao.save(cliente));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}/estado")
+public ResponseEntity<?> updateEstado(@RequestHeader(value = "Authorization") String token,
+                                      @PathVariable int id,
+                                      @RequestBody Cliente cliente) {
+    if (!validarToken(token)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acceso no autorizado");
+    }
+
+    Optional<Cliente> optionalCliente = clienteDao.findById(id);
+    if (optionalCliente.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Cliente clienteExistente = optionalCliente.get();
+
+    if (cliente.getEstado() == null) {
+        return ResponseEntity.badRequest().body("El estado no puede ser nulo");
+    }
+
+    clienteExistente.setEstado(cliente.getEstado());
+
+    try {
+        clienteDao.save(clienteExistente);
+        return ResponseEntity.ok(clienteExistente);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el estado");
+    }
+}
+
+
+    private boolean validarToken(String token) {
+        String usuarioId = jwtUtil.getKey(token);
+        return usuarioId != null;
     }
 }

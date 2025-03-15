@@ -23,30 +23,50 @@ public class Cliente {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCliente;
+    @Column(name = "idCliente")
+    private int idCliente;
+
     /**
      * Nombre del cliente
      */
+    @Column(nullable = false, length = 100)
     private String nombre;
+
     /**
      * Apellido del cliente
      */
+    @Column(nullable = false, length = 100)
     private String apellido;
+
     /**
      * Número de cédula del cliente
      */
+    @Column(nullable = false, length = 45, unique = true)
     private String cedula;
+
     /**
      * Dirección del cliente
      */
+    @Column(nullable = false, length = 45)
     private String direccion;
+
     /**
      * Número de teléfono del cliente
      */
+    @Column(nullable = false, length = 45)
     private String telefono;
+
     /**
      * Estado del cliente (activo o inactivo)
      */
-    private boolean estado;
+    @Column(nullable = false)
+    private String estado;
+
+    /**
+     * Relación con OrdenCompra (puede ser null)
+     */
+    @ManyToOne
+    @JoinColumn(name = "OrdenCompra_idOrdenCompra", referencedColumnName = "idOrdenCompra")
+    private OrdenCompra ordenCompra;
 
 }
