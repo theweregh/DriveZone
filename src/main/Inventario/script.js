@@ -1,6 +1,10 @@
-// Cargar productos al iniciar
+const API_URL = "http://localhost:3000/productos";
+// Variable global para almacenar los productos
+let productosCargados = [];
+
 document.addEventListener("DOMContentLoaded", () => {
-    obtenerProductos(); 
+    // Cargar productos al iniciar
+    obtenerProductos();
 
     // Selección de elementos
     const modal = document.getElementById("modal");
@@ -8,73 +12,75 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCerrarModal = document.getElementById("btnCerrarModal");
     const btnGuardarProducto = document.getElementById("btnGuardarProducto");
     const btnActualizarInventario = document.querySelector(".botonActualizarInventario");
+    const inputBusqueda = document.getElementById("busquedaInput");
 
-    // Abrir modal solo cuando se presiona el botón
+    // Eventos
     btnAbrirModal.addEventListener("click", () => {
         modal.style.display = "flex";
     });
 
-    // Cerrar modal al presionar la "X"
     btnCerrarModal.addEventListener("click", () => {
         modal.style.display = "none";
     });
 
-    // Guardar producto cuando se presiona el botón
-    btnGuardarProducto.addEventListener("click", () => {
-        agregarProducto();
-    });
-
-    // Actualizar inventario cuando se presiona el botón
-    btnActualizarInventario.addEventListener("click", () => {
-        actualizarInventario();
-    });
+    btnGuardarProducto.addEventListener("click", agregarProducto);
+    btnActualizarInventario.addEventListener("click", actualizarInventario);
+    
+    // Agregar evento para la búsqueda
+    inputBusqueda.addEventListener("input", filtrarProductos);
 });
 
-// unción para obtener productos desde la base de datos
-
-function obtenerProductos() {
-    fetch("http://localhost:3000/productos")
-        .then(response => response.json())
-        .then(data => {
-            console.log("📦 Productos recibidos:", data);
-            mostrarProductos(data);
-        })
-        .catch(error => console.error("❌ Error obteniendo productos:", error));
+// Obtener productos de la API
+async function obtenerProductos() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        console.log("📦 Productos recibidos:", data);
+        // Guardar los productos en la variable global
+        productosCargados = data;
+        mostrarProductos(data);
+    } catch (error) {
+        console.error("❌ Error obteniendo productos:", error);
+    }
 }
 
-// Función para mostrar productos en la interfaz
-
+// Mostrar productos en el HTML
 function mostrarProductos(productos) {
     const contenedor = document.querySelector(".productos");
     contenedor.innerHTML = "";
-
-    productos.forEach((producto) => {
-        agregarProductoAlHTML(producto);
-    });
+    productos.forEach(producto => agregarProductoAlHTML(producto));
 }
 
-//  Función para agregar productos con su ID en la interfaz
-
+// Agregar un producto al HTML
 function agregarProductoAlHTML(producto) {
     const contenedor = document.querySelector(".productos");
-
     const divProducto = document.createElement("div");
     divProducto.classList.add("producto1");
-    divProducto.setAttribute("data-id", producto.id); 
+    divProducto.dataset.id = producto.id; // Asigna el id como data attribute
 
     divProducto.innerHTML = `
-        <div class="texto"><input type="text" value="${producto.nombre}" class="textoTitulo"></div>
-        <textarea class="texto">${producto.descripcion}</textarea>
-        <div class="texto"><input type="number" value="${producto.precio}" class="texto"></div>
-        <div class="texto"><input type="number" value="${producto.cantidad}" class="texto"></div>
+        <div class="bordeTabla">
+            <input type="text" value="${producto.nombre}" class="textoTitulo">
+        </div>
+        <textarea class="bordeTabla">${producto.descripcion}</textarea>
+        <div class="bordeTabla">
+            <input type="number" value="${producto.precio}" class="textoPrecio">
+        </div>
+        <div class="textoCantidad">
+            <input type="number" value="${producto.cantidad}" class="textoCantidadInput">
+            
+        </div>
+        <div class="Eliminar"><button class="btnEliminar"></button></div>
     `;
+
+    // Agregar evento al botón eliminar
+    divProducto.querySelector(".btnEliminar").addEventListener("click", () => eliminarProducto(producto.id));
 
     contenedor.appendChild(divProducto);
 }
 
-// Función para agregar un nuevo producto a la base de datos
-
-function agregarProducto() {
+// Agregar nuevo producto a la API
+async function agregarProducto() {
     const nombre = document.getElementById("nombreModal").value.trim();
     const descripcion = document.getElementById("descripcionModal").value.trim();
     const precio = document.getElementById("precioModal").value.trim();
@@ -86,56 +92,103 @@ function agregarProducto() {
     }
 
     const producto = {
-        nombre: nombre,
-        descripcion: descripcion,
+        nombre,
+        descripcion,
         precio: Number(precio),
         cantidad: Number(cantidad)
     };
 
-    fetch("http://localhost:3000/productos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(producto)
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(producto)
+        });
+        const data = await response.json();
         console.log("✅ Producto agregado:", data);
-        obtenerProductos(); 
-    })
-    .catch(error => console.error("❌ Error al agregar producto:", error));
+        obtenerProductos();
+        limpiarFormulario();
+        document.getElementById("modal").style.display = "none"; // Cierra el modal
+    } catch (error) {
+        console.error("❌ Error al agregar producto:", error);
+    }
 }
 
-// Función para actualizar los productos en la base de datos
+// Limpiar los campos del formulario del modal
+function limpiarFormulario() {
+    document.getElementById("nombreModal").value = "";
+    document.getElementById("descripcionModal").value = "";
+    document.getElementById("precioModal").value = "";
+    document.getElementById("cantidadModal").value = "";
+}
 
-function actualizarInventario() {
-    const productos = document.querySelectorAll(".producto1");
+// Actualizar productos existentes
+async function actualizarInventario() {
+    // Selecciona solo los productos reales con data-id
+    const productos = document.querySelectorAll(".producto1[data-id]");
 
-    productos.forEach(producto => {
-        const id = producto.getAttribute("data-id"); 
-        const nombre = producto.querySelector(".textoTitulo").value.trim();
-        const descripcion = producto.querySelector("textarea").value.trim();
-        const precio = producto.querySelector("input[type='number']").value.trim();
-        const cantidad = producto.querySelectorAll("input[type='number']")[1].value.trim();
+    try {
+        for (const producto of productos) {
+            const id = producto.dataset.id;
+            const nombre = producto.querySelector(".textoTitulo").value.trim();
+            const descripcion = producto.querySelector("textarea").value.trim();
+            const precio = producto.querySelector(".textoPrecio").value.trim();
+            const cantidad = producto.querySelector(".textoCantidadInput").value.trim();
 
-        const productoActualizado = {
-            id: Number(id),
-            nombre: nombre,
-            descripcion: descripcion,
-            precio: Number(precio),
-            cantidad: Number(cantidad)
-        };
+            // Validación para evitar valores vacíos
+            if (!nombre || !descripcion || !precio || !cantidad) {
+                alert(`⚠ El producto con ID ${id} tiene campos vacíos. Revisa los datos.`);
+                continue; // O puedes hacer return si quieres detener todo
+            }
 
-        fetch(`http://localhost:3000/productos/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(productoActualizado)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(`✅ Producto ${id} actualizado`, data);
-        })
-        .catch(error => console.error(`❌ Error al actualizar producto ${id}:`, error));
-    });
+            const productoActualizado = {
+                nombre,
+                descripcion,
+                precio: Number(precio),
+                cantidad: Number(cantidad)
+            };
 
-    alert("Inventario actualizado correctamente.");
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(productoActualizado)
+            });
+            const data = await response.json();
+            console.log(`✅ Producto ${id} actualizado:`, data);
+        }
+
+        alert("✅ Inventario actualizado correctamente.");
+        obtenerProductos(); // Refresca la lista
+    } catch (error) {
+        console.error("❌ Error al actualizar inventario:", error);
+    }
+}
+
+// Eliminar producto por ID
+async function eliminarProducto(id) {
+    const confirmacion = confirm("¿Estás seguro de eliminar este producto?");
+    if (!confirmacion) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            console.log(`🗑 Producto ${id} eliminado`);
+            obtenerProductos(); // Refresca la lista
+        } else {
+            console.error("❌ Error al eliminar el producto");
+        }
+    } catch (error) {
+        console.error("❌ Error al eliminar producto:", error);
+    }
+}
+
+function filtrarProductos() {
+    const textoBusqueda = document.getElementById("busquedaInput").value.toLowerCase();
+    const productosFiltrados = productosCargados.filter(producto =>
+        producto.nombre.toLowerCase().includes(textoBusqueda)
+    );
+    mostrarProductos(productosFiltrados); // Solo se muestra lo que coincide
 }

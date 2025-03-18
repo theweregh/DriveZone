@@ -79,3 +79,21 @@ app.put("/productos/:id", (req, res) => {
 app.listen(3000, () => {
     console.log("🚀 Servidor corriendo en http://localhost:3000");
 });
+
+app.delete("/productos/:id", (req, res) => {
+    const { id } = req.params;
+    const sql = "DELETE FROM productos WHERE id = ?";
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error(`❌ Error al eliminar producto ${id}:`, err);
+            return res.status(500).json({ error: "Error al eliminar producto" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        res.json({ message: "Producto eliminado con éxito" });
+    });
+});

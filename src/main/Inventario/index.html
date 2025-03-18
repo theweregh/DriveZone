@@ -15,11 +15,21 @@
         </div>
     </div>
 
-    <div class="buscador">
-        <textarea id="busqueda">Escribe el elemento que deseas buscar</textarea>
+    <div class="busquedaContainer">
+        <input type="text" id="busquedaInput" placeholder="Buscar producto">
     </div>
 
-    <button id="btnAbrirModal">Agregar Accesorio</button>
+    <button id="btnAbrirModal">Agregar Accesorio</button>     <button class="botonActualizarInventario" onclick="actualizarInventario()">Actualizar Inventario</button>
+
+
+    <div class="Titulos">
+        <div class="tituloColumnas">
+            <div class="bordeTabla"><p>Nombre</p></div>
+            <div class="bordeTabla"><p>Descripción</p></div>
+            <div class="bordeTabla"><p>Precio</p></div>
+            <div class="textoCantidad"><p>Cantidad</p></div>
+        </div>
+    </div>
 
     <div class="productos"></div>
 
@@ -40,7 +50,6 @@
         </div>
     </div>
 
-    <button class="botonActualizarInventario" onclick="actualizarInventario()">Actualizar Inventario</button>
 
     <script src="script.js" defer></script>
 </body>
