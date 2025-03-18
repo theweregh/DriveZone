@@ -26,15 +26,17 @@
             padding: 10px 20px;
             background-color: #f8f9fc;
             border-bottom: 1px solid #ddd;
+            width: 100%;
+        }
+        #header {
+            margin-bottom: 80px; /* Ajusta la cantidad de espacio según lo necesites */
         }
     </style>
 </head>
 <body>
     <div id="header"></div> <!-- Aquí se cargará el header -->
-    <div class="top-bar">
-        <h1>Gestión de Usuarios</h1>
+        <h1 class="h3">Gestión de Usuarios</h1>
         <button onclick="agregarUsuario()" class="btn btn-primary" id="agregarUsuario">Agregar Usuario</button>
-    </div>
 
     <input type="text" id="busqueda" placeholder="Buscar por nombre o ID" class="form-control my-3">
 

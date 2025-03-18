@@ -7,6 +7,11 @@
         })
         .catch(error => console.error("Error cargando el header:", error));
 });
+function cerrarSesion() {
+        localStorage.removeItem("token"); // Borra el token
+        sessionStorage.clear(); // Limpia la sesión
+        window.location.href = "index.html"; // Redirige al login
+    }
 document.addEventListener("DOMContentLoaded", cargarClientes);
 
 function cargarClientes() {
