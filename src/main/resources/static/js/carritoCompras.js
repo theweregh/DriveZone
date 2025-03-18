@@ -59,27 +59,104 @@ function mostrarCarrito(carrito) {
     });
 
     totalCarrito.innerText = total.toLocaleString("es-CO") + " COP";
-}
+}/*
 async function actualizarCantidad(id, nuevaCantidad) {
     if (!id || nuevaCantidad <= 0) {
         console.error("ID o cantidad inválida:", id, nuevaCantidad);
         return;
     }
-
     const token = localStorage.getItem("token");
     if (!token) {
         alert("❌ No has iniciado sesión.");
         return;
     }
 
-    const data = {
-        accesorio: { id: id }, // 🔹 El backend espera este formato
-        cantidad: parseInt(nuevaCantidad, 10)
-    };
+    try {
+        // 🔹 Obtener el carrito para verificar el stock antes de actualizar
+        const carritoResponse = await fetch('/api/carrito/obtener', { headers: getHeaders() });
+        if (!carritoResponse.ok) throw new Error("Error al obtener el carrito");
 
-    console.log("🔹 Enviando datos:", JSON.stringify(data));
+        const carrito = await carritoResponse.json();
+        const item = carrito.find(item => item.accesorio?.id === id);
+
+        if (!item) {
+            console.error("❌ El producto no está en el carrito.");
+            return;
+        }
+
+        if (nuevaCantidad > item.accesorio.stock) {
+            alert(`❌ Solo hay ${item.accesorio.stock} unidades disponibles.`);
+            return;
+        }
+
+        const data = {
+            accesorio: { id: id },
+            cantidad: parseInt(nuevaCantidad, 10)
+        };
+
+        console.log("🔹 Enviando datos:", JSON.stringify(data));
+
+        const response = await fetch("/api/carrito/actualizar", {
+            method: "PUT",
+            headers: {
+                "Authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error al actualizar cantidad de ID ${id}: ${errorText}`);
+        }
+
+        console.log(`✅ Cantidad actualizada en DB para ID ${id}: ${nuevaCantidad}`);
+        cargarCarrito(); // Recargar la tabla
+    } catch (error) {
+        console.error("❌ Error en actualizarCantidad:", error);
+        alert("❌ No se pudo actualizar la cantidad en la base de datos.");
+    }
+}*/
+async function actualizarCantidad(id, nuevaCantidad) {
+    if (!id || nuevaCantidad <= 0) {
+        console.error("ID o cantidad inválida:", id, nuevaCantidad);
+        return;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("❌ No has iniciado sesión.");
+        return;
+    }
 
     try {
+        // 🔹 Obtener el carrito para verificar el stock antes de actualizar
+        const carritoResponse = await fetch('/api/carrito/obtener', { headers: getHeaders() });
+        if (!carritoResponse.ok) throw new Error("Error al obtener el carrito");
+
+        const carrito = await carritoResponse.json();
+        const item = carrito.find(item => item.accesorio?.id === id);
+
+        if (!item) {
+            console.error("❌ El producto no está en el carrito.");
+            return;
+        }
+
+        // 🔹 Verificar el stock antes de actualizar
+        if (nuevaCantidad > item.accesorio.stock) {
+            alert(`❌ Solo hay ${item.accesorio.stock} unidades disponibles.`);
+
+            // 🔹 Restaurar el valor anterior en el input
+            document.getElementById(`cantidad-${id}`).value = item.cantidad;
+            return;
+        }
+
+        const data = {
+            accesorio: { id: id },
+            cantidad: parseInt(nuevaCantidad, 10)
+        };
+
+        console.log("🔹 Enviando datos:", JSON.stringify(data));
+
         const response = await fetch("/api/carrito/actualizar", {
             method: "PUT",
             headers: {
@@ -101,6 +178,7 @@ async function actualizarCantidad(id, nuevaCantidad) {
         alert("❌ No se pudo actualizar la cantidad en la base de datos.");
     }
 }
+
 // 🔹 Eliminar un producto del carrito
 async function eliminarDelCarrito(id) {
     if (!id) {
