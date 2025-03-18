@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    $("#header").load("headerCliente.html", function() {
+        console.log("✅ Header cargado correctamente.");
+        actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
+    });
     cargarCarrito();
 });
 
@@ -9,6 +13,7 @@ async function cargarCarrito() {
         if (response.status === 204) {
             console.log("El carrito está vacío");
             mostrarCarrito([]);
+            actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
             return;
         }
         if (!response.ok) throw new Error("Error al cargar el carrito");
@@ -16,6 +21,7 @@ async function cargarCarrito() {
         const carrito = await response.json();
         console.log("Carrito cargado:", carrito);
         mostrarCarrito(carrito);
+        actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
     } catch (error) {
         console.error("Error en cargarCarrito:", error);
     }
@@ -146,5 +152,29 @@ function getHeaders() {
     };
 }
 
+// 🔹 Actualizar contador del carrito en el header
+async function actualizarContadorCarrito() {
+    try {
+        const response = await fetch("/api/carrito/carrito", {
+            method: "GET",
+            headers: getHeaders()
+        });
+
+        if (!response.ok) {
+            console.error("❌ Error al obtener el carrito:", response.statusText);
+            return;
+        }
+
+        const carrito = await response.json();
+        const totalProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
+
+        const contadorCarrito = document.getElementById("contador-carrito");
+        if (contadorCarrito) {
+            contadorCarrito.innerText = totalProductos;
+        }
+    } catch (error) {
+        console.error("❌ Error al actualizar el contador del carrito:", error);
+    }
+}
 
 

@@ -1,4 +1,7 @@
 $(document).ready(function() {
+$("#header").load("headerCliente.html", function() {
+        console.log("✅ Header cargado correctamente.");
+    });
     cargarAccesorios();
     actualizarContadorCarrito();
 });
@@ -149,6 +152,7 @@ async function agregarAlCarrito(id) {
 
         await cargarCarrito();
         alert(`✅ Añadido al carrito: ${accesorio.nombre} x${cantidad}`);
+        actualizarContadorCarrito();
     } catch (error) {
         console.error("❌ Error en agregarAlCarrito:", error);
         alert("❌ No se pudo agregar al carrito");

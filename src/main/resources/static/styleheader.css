@@ -1,0 +1,13 @@
+body {
+    padding-top: 80px; /* Ajusta según la altura del header */
+    margin: 0;
+}
+
+header {
+    height: 80px; /* Ajusta si es necesario */
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}

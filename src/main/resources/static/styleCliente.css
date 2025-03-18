@@ -8,6 +8,7 @@ body {
 .container {
     width: 80%;
     margin: auto;
+    margin-top: 80px;
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -113,5 +114,3 @@ th {
     font-size: 24px;
     cursor: pointer;
 }
-
-

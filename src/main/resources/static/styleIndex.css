@@ -4,7 +4,10 @@ body {
     padding: 0;
     text-align: center;
 }
-
+#header {
+    all: unset; /* Elimina cualquier estilo heredado */
+}
+/*
 header {
     background: #333;
     color: white;
@@ -12,12 +15,22 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}*//*
+#header {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    width: 100%; /* Hace que ocupe todo el ancho */
+    /*position: fixed; /* Lo fija en la parte superior */
+    /*top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 #carrito-icono {
     font-size: 20px;
     cursor: pointer;
-}
+}*/
 
 .grid-container {
     display: grid;
