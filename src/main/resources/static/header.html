@@ -1,0 +1,28 @@
+<header class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+    <div class="container-fluid">
+        <!-- Logo y enlace al Panel de Administrador juntos -->
+        <a class="navbar-brand" href="#">
+            <strong>🚗 Drive Zone</strong>
+        </a>
+        <a class="nav-link text-white ms-3" href="Administrador.html">Panel de Administrador</a>
+
+        <!-- Botón de Cerrar Sesión a la derecha -->
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <button class="btn btn-danger btn-sm" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<script>
+    function cerrarSesion() {
+        localStorage.removeItem("token"); // Borra el token
+        sessionStorage.clear(); // Limpia la sesión
+        window.location.href = "login.html"; // Redirige al login
+    }
+</script>
+
+
+
+
