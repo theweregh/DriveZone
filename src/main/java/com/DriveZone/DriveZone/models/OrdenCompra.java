@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Representa una orden de compra en el sistema.
@@ -34,54 +35,46 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrdenCompra {
-    /**
-     * Identificador único de la orden de compra.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idOrdenCompra")
-    private int id;
-    /**
-     * Nombre del vendedor que realizó la transacción.
-     */
-    @Column(name = "vendedor")
+    private Integer idOrdenCompra;
+
+    @Column(name = "vendedor", nullable = false, length = 45)
     private String vendedor;
-    /**
-     * Información sobre la empresa que realiza la venta.
-     */
-    @Column(name = "datosEmpresa")
+
+    @Column(name = "datosEmpresa", nullable = false, length = 45)
     private String datosEmpresa;
-    /**
-     * Fecha y hora en que se realizó la compra.
-     */
-    @Temporal(TemporalType.TIMESTAMP) // Especifica que es un campo de fecha
-    @Column(name = "fecha")
+
+    @Column(name = "fecha", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date fecha;
-    /**
-     * Subtotal de la compra antes de impuestos y descuentos.
-     */
-    @Column(name = "subtotal")
+
+    @Column(name = "precioVenta", nullable = false)
+    private Double precioVenta;
+
+    @Column(name = "subtotal", nullable = false)
     private Double subtotal;
-    /**
-     * Descuento aplicado a la compra.
-     */
-    @Column(name = "descuento")
+
+    @Column(name = "descuento", nullable = false)
     private Double descuento;
-    /**
-     * Impuesto aplicado a la compra.
-     */
-    @Column(name = "impuesto")
+
+    @Column(name = "impuesto", nullable = false)
     private Double impuesto;
-    /**
-     * Total a pagar después de aplicar descuentos e impuestos.
-     */
-    @Column(name = "total")
+
+    @Column(name = "total", nullable = false)
     private Double total;
-    /**
-     * Relación con el carrito de compras asociado a esta orden.
-     */
+
     @ManyToOne
-    @JoinColumn(name = "CarritoCompra_idCarritoCompra", nullable = false)
+    @JoinColumn(name = "CarritoCompra_idCarritoCompra", referencedColumnName = "idCarritoCompra", nullable = true)
     private CarritoCompra carritoCompra;
+
+    @ManyToOne
+    @JoinColumn(name = "Usuario_idUsuario", referencedColumnName = "idUsuario", nullable = true)
+    private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "Cliente_idCliente", referencedColumnName = "idCliente", nullable = true)
+    private Cliente cliente;
 
 }

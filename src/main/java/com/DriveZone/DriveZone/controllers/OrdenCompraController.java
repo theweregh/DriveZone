@@ -3,10 +3,13 @@ package com.DriveZone.DriveZone.controllers;
 
 import com.DriveZone.DriveZone.dao.OrdenCompraDaoImp;
 import com.DriveZone.DriveZone.models.OrdenCompra;
+import com.DriveZone.DriveZone.services.OrdenCompraService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controlador REST para gestionar órdenes de compra en el sistema.
@@ -15,46 +18,49 @@ import java.util.List;
 @RequestMapping("/ordenes-compra")
 public class OrdenCompraController {
     @Autowired
-    private OrdenCompraDaoImp ordenCompraDao;
+    private OrdenCompraService ordenCompraService;
 
     /**
-     * Obtiene la lista de todas las órdenes de compra registradas.
-     *
-     * @return Lista de objetos {@link OrdenCompra}.
+     * Obtiene todas las órdenes de compra.
+     * @return Lista de órdenes de compra.
      */
     @GetMapping
-    public List<OrdenCompra> getOrdenesCompra() {
-        return ordenCompraDao.obtenerTodasLasOrdenes();
+    public List<OrdenCompra> obtenerTodasLasOrdenes() {
+        return ordenCompraService.obtenerTodasLasOrdenes();
     }
 
     /**
-     * Obtiene una orden de compra específica por su ID.
-     *
-     * @param id ID de la orden de compra a buscar.
-     * @return Objeto {@link OrdenCompra} si se encuentra.
+     * Obtiene una orden de compra por su ID.
+     * @param id ID de la orden de compra.
+     * @return Orden de compra si existe, o un error 404 si no se encuentra.
      */
     @GetMapping("/{id}")
-    public OrdenCompra getOrdenCompra(@PathVariable int id) {
-        return ordenCompraDao.obtenerOrdenPorId(id).get();
+    public ResponseEntity<OrdenCompra> obtenerOrdenPorId(@PathVariable int id) {
+        Optional<OrdenCompra> orden = ordenCompraService.obtenerOrdenPorId(id);
+        return orden.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
-     * Registra una nueva orden de compra en la base de datos.
-     *
-     * @param ordenCompra Objeto {@link OrdenCompra} a registrar.
+     * Crea una nueva orden de compra.
+     * @param ordenCompra Datos de la nueva orden.
+     * @return La orden de compra creada.
      */
     @PostMapping
-    public void registrarOrden(@RequestBody OrdenCompra ordenCompra) {
-        ordenCompraDao.guardarOrden(ordenCompra);
+    public ResponseEntity<OrdenCompra> crearOrdenCompra(@RequestBody OrdenCompra ordenCompra) {
+        OrdenCompra nuevaOrden = ordenCompraService.crearOrdenCompra(ordenCompra);
+        return ResponseEntity.ok(nuevaOrden);
     }
 
     /**
-     * Elimina una orden de compra de la base de datos.
-     *
-     * @param id ID de la orden de compra a eliminar.
+     * Elimina una orden de compra por su ID.
+     * @param id ID de la orden a eliminar.
+     * @return Respuesta 200 si se eliminó correctamente, o 404 si no se encontró.
      */
     @DeleteMapping("/{id}")
-    public void deleteOrdenCompra(@PathVariable int id) {
-        ordenCompraDao.eliminarOrden(id);
+    public ResponseEntity<Void> eliminarOrden(@PathVariable int id) {
+        if (ordenCompraService.eliminarOrden(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
