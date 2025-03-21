@@ -1,258 +1,237 @@
 document.addEventListener("DOMContentLoaded", function () {
     $("#header").load("headerCliente.html", function() {
         console.log("✅ Header cargado correctamente.");
-        actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
+        actualizarContadorCarrito();
     });
     cargarCarrito();
 });
 
-// 🔹 Cargar productos en el carrito
-async function cargarCarrito() {
-    try {
-        const response = await fetch('/api/carrito/obtener', { headers: getHeaders() });
-        if (response.status === 204) {
-            console.log("El carrito está vacío");
-            mostrarCarrito([]);
-            actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
-            return;
-        }
-        if (!response.ok) throw new Error("Error al cargar el carrito");
-
-        const carrito = await response.json();
-        console.log("Carrito cargado:", carrito);
-        mostrarCarrito(carrito);
-        actualizarContadorCarrito(); // 🔹 Actualizar contador si el carrito está vacío
-    } catch (error) {
-        console.error("Error en cargarCarrito:", error);
-    }
+// Función para obtener el carrito desde localStorage
+function obtenerCarritoDesdeLocalStorage() {
+    return JSON.parse(localStorage.getItem("carrito")) || [];
 }
 
-// 🔹 Mostrar productos en la tabla del carrito
+// Función para guardar el carrito en localStorage
+function guardarCarritoEnLocalStorage(carrito) {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+}
+
+// Función para cargar el carrito y mostrarlo
+function cargarCarrito() {
+    const carrito = obtenerCarritoDesdeLocalStorage();
+    console.log("📦 Datos en localStorage:", localStorage.getItem("carrito"));
+    console.log("➡️ Carrito cargado:", carrito);
+    mostrarCarrito(carrito);
+    actualizarContadorCarrito();
+}
 function mostrarCarrito(carrito) {
     const listaCarrito = document.getElementById("carrito-lista");
     const totalCarrito = document.getElementById("total-carrito");
+
+    if (!listaCarrito) {
+        console.error("❌ Elemento 'carrito-lista' no encontrado en el DOM.");
+        return;
+    }
+
+    if (!Array.isArray(carrito) || carrito.length === 0) {
+        console.warn("⚠️ El carrito está vacío o tiene un formato incorrecto.");
+        listaCarrito.innerHTML = "<tr><td colspan='5'>No hay productos en el carrito.</td></tr>";
+        totalCarrito.innerText = "0 COP";
+        return;
+    }
+
     listaCarrito.innerHTML = "";
     let total = 0;
 
     carrito.forEach(item => {
-        if (!item.accesorio) return;
+        if (!item.id || !item.nombre || !item.precio) {
+            console.warn("⚠️ Item inválido en el carrito:", item);
+            return;
+        }
 
-        const accesorio = item.accesorio;
+        const id = item.id;
+        const nombre = item.nombre;
+        const precio = item.precio;
         const cantidad = item.cantidad || 1;
-        const subtotal = accesorio.precioVenta * cantidad;
+        const subtotal = precio * cantidad;
         total += subtotal;
 
         const fila = document.createElement("tr");
         fila.innerHTML = `
-            <td>${accesorio.nombre}</td>
-            <td>$${accesorio.precioVenta.toLocaleString("es-CO")}</td>
+            <td>${nombre}</td>
+            <td>$${precio.toLocaleString("es-CO")}</td>
             <td>
-                <input id="cantidad-${accesorio.id}" type="number" value="${cantidad}" min="1"
-                    onchange="actualizarCantidad(${accesorio.id}, this.value)">
+                <input id="cantidad-${id}" type="number" value="${cantidad}" min="1"
+                    onchange="actualizarCantidad(${id}, this.value)">
             </td>
             <td>$${subtotal.toLocaleString("es-CO")}</td>
             <td>
-                <button onclick="eliminarDelCarrito(${accesorio.id})">❌</button>
+                <button onclick="eliminarDelCarrito(${id})">❌</button>
             </td>
         `;
         listaCarrito.appendChild(fila);
     });
 
     totalCarrito.innerText = total.toLocaleString("es-CO") + " COP";
-}/*
-async function actualizarCantidad(id, nuevaCantidad) {
-    if (!id || nuevaCantidad <= 0) {
-        console.error("ID o cantidad inválida:", id, nuevaCantidad);
-        return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-        alert("❌ No has iniciado sesión.");
+}
+function actualizarCantidad(id, cantidad) {
+    cantidad = parseInt(cantidad, 10);
+
+    if (isNaN(cantidad) || cantidad < 1) {
+        console.warn("⚠️ Cantidad inválida, se mantiene el valor anterior.");
         return;
     }
 
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let producto = carrito.find(item => item.id === id);
+
+    if (!producto) {
+        console.error("❌ No se encontró el producto en el carrito.");
+        return;
+    }
+
+    producto.cantidad = cantidad;
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    mostrarCarrito(carrito);
+}
+function eliminarDelCarrito(id) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    let nuevoCarrito = carrito.filter(item => item.id !== id);
+
+    if (nuevoCarrito.length === carrito.length) {
+        console.warn("⚠️ No se encontró el producto a eliminar.");
+        return;
+    }
+
+    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
+    mostrarCarrito(nuevoCarrito);
+}
+
+// Función para actualizar el contador del carrito en el header
+function actualizarContadorCarrito() {
+    const carrito = obtenerCarritoDesdeLocalStorage();
+    const totalProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
+    const contadorCarrito = document.getElementById("contador-carrito");
+    if (contadorCarrito) {
+        contadorCarrito.innerText = totalProductos;
+    }
+}
+
+// Evento para procesar la compra
+document.getElementById("procesar-compra").addEventListener("click", function() {
+    alert("✅ ¡Compra procesada con éxito!");
+    localStorage.removeItem("carrito");
+    cargarCarrito();
+});
+// Función para obtener el stock de un accesorio desde la API con depuración
+/*
+async function obtenerStockDesdeAPI(id) {
     try {
-        // 🔹 Obtener el carrito para verificar el stock antes de actualizar
-        const carritoResponse = await fetch('/api/carrito/obtener', { headers: getHeaders() });
-        if (!carritoResponse.ok) throw new Error("Error al obtener el carrito");
-
-        const carrito = await carritoResponse.json();
-        const item = carrito.find(item => item.accesorio?.id === id);
-
-        if (!item) {
-            console.error("❌ El producto no está en el carrito.");
-            return;
-        }
-
-        if (nuevaCantidad > item.accesorio.stock) {
-            alert(`❌ Solo hay ${item.accesorio.stock} unidades disponibles.`);
-            return;
-        }
-
-        const data = {
-            accesorio: { id: id },
-            cantidad: parseInt(nuevaCantidad, 10)
-        };
-
-        console.log("🔹 Enviando datos:", JSON.stringify(data));
-
-        const response = await fetch("/api/carrito/actualizar", {
-            method: "PUT",
+        const token = localStorage.getItem("token"); // Obtener el token almacenado
+        const response = await fetch(`api/accesorio/${id}`, {
+            method: "GET",
             headers: {
-                "Authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+                "Authorization": token
+            }
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error al actualizar cantidad de ID ${id}: ${errorText}`);
+            throw new Error(`❌ Error al obtener stock (${response.status})`);
         }
 
-        console.log(`✅ Cantidad actualizada en DB para ID ${id}: ${nuevaCantidad}`);
-        cargarCarrito(); // Recargar la tabla
+        const accesorio = await response.json();
+        console.log("🔍 Datos recibidos desde la API:", accesorio); // Depuración
+
+        if (!accesorio || accesorio.stock === undefined) {
+            console.warn("⚠️ Advertencia: 'stock' no encontrado en la respuesta de la API.");
+            return 0;
+        }
+
+        return accesorio.stock; // Suponiendo que el backend devuelve "stock"
     } catch (error) {
-        console.error("❌ Error en actualizarCantidad:", error);
-        alert("❌ No se pudo actualizar la cantidad en la base de datos.");
+        console.error("⚠️ Error obteniendo stock:", error);
+        return 0; // En caso de error, devolver 0 stock para evitar problemas
     }
 }*/
-async function actualizarCantidad(id, nuevaCantidad) {
-    if (!id || nuevaCantidad <= 0) {
-        console.error("ID o cantidad inválida:", id, nuevaCantidad);
-        return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-        alert("❌ No has iniciado sesión.");
-        return;
-    }
-
+// Obtiene el stock de un accesorio desde la API
+async function obtenerStockDesdeAPI(id) {
     try {
-        // 🔹 Obtener el carrito para verificar el stock antes de actualizar
-        const carritoResponse = await fetch('/api/carrito/obtener', { headers: getHeaders() });
-        if (!carritoResponse.ok) throw new Error("Error al obtener el carrito");
-
-        const carrito = await carritoResponse.json();
-        const item = carrito.find(item => item.accesorio?.id === id);
-
-        if (!item) {
-            console.error("❌ El producto no está en el carrito.");
-            return;
-        }
-
-        // 🔹 Verificar el stock antes de actualizar
-        if (nuevaCantidad > item.accesorio.stock) {
-            alert(`❌ Solo hay ${item.accesorio.stock} unidades disponibles.`);
-
-            // 🔹 Restaurar el valor anterior en el input
-            document.getElementById(`cantidad-${id}`).value = item.cantidad;
-            return;
-        }
-
-        const data = {
-            accesorio: { id: id },
-            cantidad: parseInt(nuevaCantidad, 10)
-        };
-
-        console.log("🔹 Enviando datos:", JSON.stringify(data));
-
-        const response = await fetch("/api/carrito/actualizar", {
-            method: "PUT",
-            headers: {
-                "Authorization": token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error al actualizar cantidad de ID ${id}: ${errorText}`);
-        }
-
-        console.log(`✅ Cantidad actualizada en DB para ID ${id}: ${nuevaCantidad}`);
-        cargarCarrito(); // Recargar la tabla
-    } catch (error) {
-        console.error("❌ Error en actualizarCantidad:", error);
-        alert("❌ No se pudo actualizar la cantidad en la base de datos.");
-    }
-}
-
-// 🔹 Eliminar un producto del carrito
-async function eliminarDelCarrito(id) {
-    if (!id) {
-        console.error("Intento de eliminar con ID inválido:", id);
-        return;
-    }
-
-    try {
-        const response = await fetch(`/api/carrito/eliminar/${id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-
-        if (!response.ok) throw new Error(`Error al eliminar el accesorio ${id}`);
-
-        console.log(`✅ Accesorio eliminado: ${id}`);
-        cargarCarrito();
-    } catch (error) {
-        console.error("❌ Error en eliminarDelCarrito:", error);
-    }
-}
-
-// 🔹 Procesar compra
-async function procesarCompra() {
-    try {
-        const response = await fetch('/api/carrito/procesar', {
-            method: 'POST',
-            headers: getHeaders()
-        });
-
-        if (!response.ok) throw new Error("Error al procesar la compra");
-
-        alert("✅ ¡Compra realizada con éxito!");
-        cargarCarrito();
-    } catch (error) {
-        alert("❌ Error al procesar la compra");
-        console.error("Error en procesarCompra:", error);
-    }
-}
-
-document.getElementById("procesar-compra").addEventListener("click", procesarCompra);
-
-// 🔹 Obtener encabezados para las solicitudes
-function getHeaders() {
-    return {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': localStorage.token || ''
-    };
-}
-
-// 🔹 Actualizar contador del carrito en el header
-async function actualizarContadorCarrito() {
-    try {
-        const response = await fetch("/api/carrito/carrito", {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`api/accesorio/${id}`, {
             method: "GET",
-            headers: getHeaders()
+            headers: { "Authorization": token }
         });
 
-        if (!response.ok) {
-            console.error("❌ Error al obtener el carrito:", response.statusText);
-            return;
-        }
+        if (!response.ok) throw new Error(`Error al obtener stock (${response.status})`);
 
-        const carrito = await response.json();
-        const totalProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
+        const accesorio = await response.json();
+        console.log("🔍 Accesorio recibido:", accesorio);
 
-        const contadorCarrito = document.getElementById("contador-carrito");
-        if (contadorCarrito) {
-            contadorCarrito.innerText = totalProductos;
-        }
+        return accesorio?.stock ?? 0; // Si stock es undefined, devuelve 0
     } catch (error) {
-        console.error("❌ Error al actualizar el contador del carrito:", error);
+        console.error("⚠️ Error obteniendo stock:", error);
+        return 0;
     }
 }
+
+// Función para agregar un producto al carrito con validación de stock desde la API
+async function agregarAlCarrito(id, nombre, precio) {
+    const stockMaximo = await obtenerStockDesdeAPI(id);
+    console.log(`🔍 Stock máximo obtenido para "${nombre}":`, stockMaximo); // Depuración
+
+    let carrito = obtenerCarritoDesdeLocalStorage();
+    let producto = carrito.find(item => item.id === id);
+
+    if (producto) {
+        console.log(`🛒 Producto ya en carrito: ${producto.nombre}, cantidad actual: ${producto.cantidad}`);
+        if (producto.cantidad + 1 > stockMaximo) {
+            alert(`⚠️ No puedes agregar más unidades de "${nombre}". Stock máximo: ${stockMaximo}.`);
+            return;
+        }
+        producto.cantidad++;
+    } else {
+        if (stockMaximo < 1) {
+            alert(`❌ "${nombre}" está agotado.`);
+            return;
+        }
+        carrito.push({ id, nombre, precio, cantidad: 1 });
+    }
+
+    guardarCarritoEnLocalStorage(carrito);
+    mostrarCarrito(carrito);
+}
+
+// Función para actualizar la cantidad con validación de stock desde la API
+async function actualizarCantidad(id, cantidad) {
+    cantidad = parseInt(cantidad, 10);
+    const stockMaximo = await obtenerStockDesdeAPI(id);
+
+    console.log(`🔍 Intentando actualizar cantidad para "${id}". Cantidad ingresada: ${cantidad}, Stock disponible: ${stockMaximo}`);
+
+    if (isNaN(cantidad) || cantidad < 1) {
+        console.warn("⚠️ Cantidad inválida, se mantiene el valor anterior.");
+        return;
+    }
+
+    if (cantidad > stockMaximo) {
+        alert(`⚠️ Solo puedes agregar hasta ${stockMaximo} unidades.`);
+        document.getElementById(`cantidad-${id}`).value = stockMaximo;
+        cantidad = stockMaximo;
+    }
+
+    let carrito = obtenerCarritoDesdeLocalStorage();
+    let producto = carrito.find(item => item.id === id);
+
+    if (!producto) {
+        console.error("❌ No se encontró el producto en el carrito.");
+        return;
+    }
+
+    producto.cantidad = cantidad;
+    guardarCarritoEnLocalStorage(carrito);
+    mostrarCarrito(carrito);
+}
+
+
 
 

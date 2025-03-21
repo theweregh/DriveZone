@@ -25,10 +25,16 @@ public class AccesorioController {
      * @param id Identificador del accesorio a recuperar.
      * @return El accesorio correspondiente al ID proporcionado.
      */
-    @RequestMapping(value = "api/accesorio/{id}")
-    public Accesorio getAccesorio(@PathVariable int id) {
-        Accesorio accesorio = new Accesorio("10", "steering wheel", 10, 1, 12500D, "xd.png", 0.8);
-        return accesorio;
+    @RequestMapping(value = "api/accesorio/{id}", method = RequestMethod.GET)
+    public Accesorio getAccesorio(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
+        System.out.println("Token recibido: " + token);
+    String userId = jwtUtil.getKey(token);
+    System.out.println("Usuario ID extraído: " + userId);
+    if (!validarToken(token)) {
+        return null;
+    }
+
+    return accesorioDao.findById(id).orElse(null);
     }
 
     /**
