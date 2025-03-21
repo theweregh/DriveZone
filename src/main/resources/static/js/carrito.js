@@ -1,9 +1,9 @@
 $(document).ready(function() {
     $("#header").load("headerCliente.html", function() {
         console.log("✅ Header cargado correctamente.");
+        actualizarContadorCarrito();
     });
     cargarAccesorios();
-    actualizarContadorCarrito();
 });
 
 let accesoriosCargados = [];
@@ -15,20 +15,27 @@ async function cargarAccesorios() {
     try {
         const request = await fetch('/api/accesorio', { method: 'GET', headers: getHeaders() });
         accesoriosCargados = await request.json();
+        if (!Array.isArray(accesoriosCargados)) throw new Error("Datos de accesorios no válidos");
         mostrarAccesorios();
     } catch (error) {
         console.error("❌ Error al cargar accesorios:", error);
+        alert("No se pudieron cargar los accesorios. Inténtalo más tarde.");
     }
 }
 
 function mostrarAccesorios() {
     const contenedor = document.getElementById("lista-accesorios");
+    if (!contenedor) {
+        console.error("❌ No se encontró el contenedor de accesorios");
+        return;
+    }
     contenedor.innerHTML = "";
     const inicio = (paginaActual - 1) * accesoriosPorPagina;
     const fin = inicio + accesoriosPorPagina;
     const accesoriosPagina = accesoriosCargados.slice(inicio, fin);
 
     accesoriosPagina.forEach(accesorio => {
+        if (!accesorio || typeof accesorio !== 'object') return;
         const cantidadEnCarrito = obtenerCantidadEnCarrito(accesorio.id);
         const stockDisponible = accesorio.stock - cantidadEnCarrito;
         const item = document.createElement("div");
@@ -50,10 +57,13 @@ function mostrarAccesorios() {
 function validarCantidad(id) {
     const inputCantidad = document.getElementById(`cantidad-${id}`);
     const accesorio = accesoriosCargados.find(a => a.id === id);
+    if (!inputCantidad || !accesorio) return;
+
     const cantidadEnCarrito = obtenerCantidadEnCarrito(id);
     const stockDisponible = accesorio.stock - cantidadEnCarrito;
     let cantidad = parseInt(inputCantidad.value, 10);
-    if (cantidad < 1 || isNaN(cantidad)) inputCantidad.value = 1;
+
+    if (isNaN(cantidad) || cantidad < 1) inputCantidad.value = 1;
     else if (cantidad > stockDisponible) {
         inputCantidad.value = stockDisponible;
         alert(`⚠️ Solo puedes agregar ${stockDisponible} unidades más.`);
@@ -61,69 +71,100 @@ function validarCantidad(id) {
 }
 
 function obtenerCantidadEnCarrito(id) {
-    const itemEnCarrito = carrito.find(item => item.id === id);
-    return itemEnCarrito ? itemEnCarrito.cantidad : 0;
+    const producto = carrito.find(item => item.id === id);
+    return producto ? producto.cantidad : 0;
 }
 
+function actualizarContadorCarrito() {
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const totalProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
+    const contadorCarrito = document.getElementById("contador-carrito");
+    if (contadorCarrito) {
+        contadorCarrito.innerText = totalProductos;
+    }
+}
+/*
 function agregarAlCarrito(id) {
-    const inputCantidad = document.getElementById(`cantidad-${id}`);
-    let cantidad = parseInt(inputCantidad.value, 10);
+    const cantidadInput = document.getElementById(`cantidad-${id}`);
+    if (!cantidadInput) return;
+
+    let cantidad = parseInt(cantidadInput.value, 10);
     const accesorio = accesoriosCargados.find(a => a.id === id);
     if (!accesorio) {
         alert("❌ Error: accesorio no encontrado");
         return;
     }
-    const cantidadEnCarrito = obtenerCantidadEnCarrito(id);
-    const stockDisponible = accesorio.stock - cantidadEnCarrito;
-    if (cantidadEnCarrito >= accesorio.stock) {
-        alert(`❌ Ya tienes el máximo de ${accesorio.stock} unidades en el carrito.`);
-        return;
-    }
+
+    const stockDisponible = accesorio.stock - obtenerCantidadEnCarrito(id);
     if (cantidad > stockDisponible) {
-        cantidad = stockDisponible;
-        inputCantidad.value = cantidad;
         alert(`⚠️ Solo puedes agregar ${stockDisponible} unidades más.`);
-    }
-    if (cantidad <= 0) {
-        alert("❌ La cantidad debe ser mayor a 0.");
         return;
     }
-    let itemEnCarrito = carrito.find(item => item.id === id);
-    if (itemEnCarrito) itemEnCarrito.cantidad += cantidad;
-    else carrito.push({ id: accesorio.id, nombre: accesorio.nombre, precio: accesorio.precioVenta, cantidad });
+
+    let producto = carrito.find(item => item.id === id);
+    if (producto) {
+        producto.cantidad += cantidad;
+    } else {
+        carrito.push({ id, nombre: accesorio.nombre, precio: accesorio.precioVenta, cantidad });
+    }
+
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert(`✅ Añadido al carrito: ${accesorio.nombre} x${cantidad}`);
     actualizarContadorCarrito();
+}*/
+function agregarAlCarrito(id) {
+    const cantidadInput = document.getElementById(`cantidad-${id}`);
+    if (!cantidadInput) return;
+
+    let cantidad = parseInt(cantidadInput.value, 10);
+    const accesorio = accesoriosCargados.find(a => a.id === id);
+    if (!accesorio) {
+        alert("❌ Error: accesorio no encontrado");
+        return;
+    }
+
+    const stockDisponible = accesorio.stock - obtenerCantidadEnCarrito(id);
+    if (cantidad > stockDisponible) {
+        alert(`⚠️ Solo puedes agregar ${stockDisponible} unidades más.`);
+        return;
+    }
+
+    let producto = carrito.find(item => item.id === id);
+    if (producto) {
+        producto.cantidad += cantidad;
+    } else {
+        carrito.push({ id, nombre: accesorio.nombre, precio: accesorio.precioVenta, cantidad });
+    }
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    actualizarContadorCarrito();
+
+    // 🔹 Actualiza el stock en la UI
+    actualizarStockUI(id);
 }
 
-function actualizarContadorCarrito() {
-    const totalProductos = carrito.reduce((total, item) => total + item.cantidad, 0);
-    document.getElementById("contador-carrito").innerText = totalProductos;
-}
+function actualizarStockUI(id) {
+    const accesorio = accesoriosCargados.find(a => a.id === id);
+    if (!accesorio) return;
 
-document.getElementById("prev-page").addEventListener("click", function() {
-    if (paginaActual > 1) {
-        paginaActual--;
-        mostrarAccesorios();
+    const stockDisponible = accesorio.stock - obtenerCantidadEnCarrito(id);
+    const stockElemento = document.querySelector(`#cantidad-${id}`).parentNode.querySelector("p:nth-child(5)");
+
+    if (stockElemento) {
+        stockElemento.innerHTML = `<strong>Stock: </strong> ${stockDisponible} unidades`;
     }
-});
 
-document.getElementById("next-page").addEventListener("click", function() {
-    if (paginaActual * accesoriosPorPagina < accesoriosCargados.length) {
-        paginaActual++;
-        mostrarAccesorios();
+    // 🔹 Ajusta el valor máximo del input
+    const inputCantidad = document.getElementById(`cantidad-${id}`);
+    if (inputCantidad) {
+        inputCantidad.max = stockDisponible;
     }
-});
-
-function irAlCarrito() {
-    window.location.href = "carrito.html";
 }
 
 function getHeaders() {
     return {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': localStorage.token || ''
+        'Authorization': localStorage.token
     };
 }
 

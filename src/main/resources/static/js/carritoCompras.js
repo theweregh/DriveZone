@@ -93,6 +93,7 @@ function actualizarCantidad(id, cantidad) {
     producto.cantidad = cantidad;
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito(carrito);
+    actualizarContadorCarrito();
 }
 function eliminarDelCarrito(id) {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -105,6 +106,7 @@ function eliminarDelCarrito(id) {
 
     localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
     mostrarCarrito(nuevoCarrito);
+    actualizarContadorCarrito();
 }
 
 // Función para actualizar el contador del carrito en el header
@@ -123,36 +125,6 @@ document.getElementById("procesar-compra").addEventListener("click", function() 
     localStorage.removeItem("carrito");
     cargarCarrito();
 });
-// Función para obtener el stock de un accesorio desde la API con depuración
-/*
-async function obtenerStockDesdeAPI(id) {
-    try {
-        const token = localStorage.getItem("token"); // Obtener el token almacenado
-        const response = await fetch(`api/accesorio/${id}`, {
-            method: "GET",
-            headers: {
-                "Authorization": token
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`❌ Error al obtener stock (${response.status})`);
-        }
-
-        const accesorio = await response.json();
-        console.log("🔍 Datos recibidos desde la API:", accesorio); // Depuración
-
-        if (!accesorio || accesorio.stock === undefined) {
-            console.warn("⚠️ Advertencia: 'stock' no encontrado en la respuesta de la API.");
-            return 0;
-        }
-
-        return accesorio.stock; // Suponiendo que el backend devuelve "stock"
-    } catch (error) {
-        console.error("⚠️ Error obteniendo stock:", error);
-        return 0; // En caso de error, devolver 0 stock para evitar problemas
-    }
-}*/
 // Obtiene el stock de un accesorio desde la API
 async function obtenerStockDesdeAPI(id) {
     try {
@@ -199,6 +171,7 @@ async function agregarAlCarrito(id, nombre, precio) {
 
     guardarCarritoEnLocalStorage(carrito);
     mostrarCarrito(carrito);
+    actualizarContadorCarrito();
 }
 
 // Función para actualizar la cantidad con validación de stock desde la API
@@ -230,8 +203,15 @@ async function actualizarCantidad(id, cantidad) {
     producto.cantidad = cantidad;
     guardarCarritoEnLocalStorage(carrito);
     mostrarCarrito(carrito);
-}
-
+    actualizarContadorCarrito();
+}/*
+function getHeaders() {
+    return {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.token
+    };
+}*/
 
 
 

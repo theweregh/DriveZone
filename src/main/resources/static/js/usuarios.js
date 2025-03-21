@@ -9,6 +9,7 @@
 });
 function cerrarSesion() {
         localStorage.removeItem("token"); // Borra el token
+        localStorage.removeItem("carrito"); // Borra el carrito
         sessionStorage.clear(); // Limpia la sesión
         window.location.href = "index.html"; // Redirige al login
     }
