@@ -1,11 +1,8 @@
 package com.DriveZone.DriveZone.controllers;
 
-import com.DriveZone.DriveZone.dao.CarritoCompraDao;
 import com.DriveZone.DriveZone.dao.UsuarioDao;
-import com.DriveZone.DriveZone.models.CarritoCompra;
 import com.DriveZone.DriveZone.models.LogBusqueda;
 import com.DriveZone.DriveZone.models.Usuario;
-import com.DriveZone.DriveZone.repository.CarritoRepository;
 import com.DriveZone.DriveZone.repository.UsuarioRepository;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
@@ -25,11 +22,7 @@ public class UserController {
     @Autowired
     private UsuarioDao usuarioDao;
     @Autowired
-    private CarritoCompraDao carritoCompraDao;
-    @Autowired
     private UsuarioRepository usuarioRepository;
-    @Autowired
-    private CarritoRepository carritoRepository;
     @Autowired
     private JWTUtil jwtUtil;
     @Autowired
@@ -77,9 +70,9 @@ public class UserController {
         usuarioRepository.save(usuario);
 
         // Crear carrito vacío al registrar usuario
-        CarritoCompra carrito = new CarritoCompra();
+        /*CarritoCompra carrito = new CarritoCompra();
         carrito.setUsuario(usuario);
-        carritoRepository.save(carrito);
+        carritoRepository.save(carrito);*/
 
         usuarioDao.registrar(usuario);
 

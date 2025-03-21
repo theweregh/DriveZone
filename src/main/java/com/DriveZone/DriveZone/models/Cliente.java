@@ -62,12 +62,4 @@ public class Cliente {
 @Enumerated(EnumType.STRING)
 @Column(nullable = false)
 private EstadoCliente estado;
-
-    /**
-     * Relación con OrdenCompra (puede ser null)
-     */
-    @ManyToOne
-    @JoinColumn(name = "OrdenCompra_idOrdenCompra", referencedColumnName = "idOrdenCompra")
-    private OrdenCompra ordenCompra;
-
 }

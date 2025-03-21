@@ -72,13 +72,6 @@ public class Usuario {
     @Column(name = "rol")
     private String rol;
     /**
-     * Lista de carritos de compra asociados al usuario.
-     */
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<CarritoCompra> carritos;
-
-    /**
      * Constructor que permite crear un usuario con un identificador específico.
      *
      * @param usuarioId ID del usuario.

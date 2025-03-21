@@ -64,17 +64,10 @@ public class OrdenCompra {
 
     @Column(name = "total", nullable = false)
     private Double total;
-
     @ManyToOne
-    @JoinColumn(name = "CarritoCompra_idCarritoCompra", referencedColumnName = "idCarritoCompra", nullable = true)
-    private CarritoCompra carritoCompra;
-
-    @ManyToOne
-    @JoinColumn(name = "Usuario_idUsuario", referencedColumnName = "idUsuario", nullable = true)
+    @JoinColumn(name = "Usuario_idUsuario")
     private Usuario usuario;
-
     @ManyToOne
-    @JoinColumn(name = "Cliente_idCliente", referencedColumnName = "idCliente", nullable = true)
+    @JoinColumn(name = "Cliente_idCliente")
     private Cliente cliente;
-
 }
