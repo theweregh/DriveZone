@@ -17,105 +17,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-    /*@Autowired
-    private ClienteDao clienteDao;
-
-    @GetMapping
-    public List<Cliente> getClientes() {
-        return clienteDao.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Cliente> getClienteById(@PathVariable int id) {
-        return clienteDao.findById(id);
-    }
-
-    @PostMapping
-    public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteDao.save(cliente);
-    }
-
-    @PutMapping("/{id}")
-    public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
-        if (clienteDao.existsById(id)) {
-            cliente.setIdCliente(id);
-            return clienteDao.save(cliente);
-        }
-        return null;
-    }
-@PutMapping("/{id}/desactivar")
-public Cliente desactivarCliente(@PathVariable int id) {
-    Optional<Cliente> optionalCliente = clienteDao.findById(id);
-    if (optionalCliente.isPresent()) {
-        Cliente cliente = optionalCliente.get();
-        cliente.setEstado("inactivo");
-        return clienteDao.save(cliente);
-    }
-    return null;
-}
-
-@PutMapping("/{id}/activar")
-public Cliente activarCliente(@PathVariable int id) {
-    Optional<Cliente> optionalCliente = clienteDao.findById(id);
-    if (optionalCliente.isPresent()) {
-        Cliente cliente = optionalCliente.get();
-        cliente.setEstado("activo");
-        return clienteDao.save(cliente);
-    }
-    return null;
-}*/
-/*@Autowired
-    private ClienteDao clienteDao;
-
-    @Autowired
-    private JWTUtil jwtUtil;
-
-    @GetMapping
-    public List<Cliente> getClientes() {
-        return clienteDao.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Cliente> getClienteById(@PathVariable int id) {
-        return clienteDao.findById(id);
-    }
-
-    @PostMapping
-    public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteDao.save(cliente);
-    }
-
-    @PutMapping("/{id}")
-    public Cliente updateCliente(@PathVariable int id, @RequestBody Cliente cliente) {
-        if (clienteDao.existsById(id)) {
-            cliente.setIdCliente(id);
-            return clienteDao.save(cliente);
-        }
-        return null;
-    }
-
-    @PutMapping("/{id}/estado")
-    public ResponseEntity<?> updateEstado(@RequestHeader(value = "Authorization") String token,
-                                          @PathVariable int id,
-                                          @RequestBody Cliente cliente) {
-        if (!validarToken(token)) {
-            return ResponseEntity.status(403).body("Acceso no autorizado");
-        }
-
-        Optional<Cliente> optionalCliente = clienteDao.findById(id);
-        if (optionalCliente.isPresent()) {
-            Cliente clienteExistente = optionalCliente.get();
-            clienteExistente.setEstado(cliente.getEstado());
-            clienteDao.save(clienteExistente);
-            return ResponseEntity.ok(clienteExistente);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    private boolean validarToken(String token) {
-        String usuarioId = jwtUtil.getKey(token);
-        return usuarioId != null;
-    }*/
     @Autowired
     private ClienteDao clienteDao;
 
@@ -176,8 +77,6 @@ public ResponseEntity<?> updateEstado(@RequestHeader(value = "Authorization") St
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el estado");
     }
 }
-
-
     private boolean validarToken(String token) {
         String usuarioId = jwtUtil.getKey(token);
         return usuarioId != null;
