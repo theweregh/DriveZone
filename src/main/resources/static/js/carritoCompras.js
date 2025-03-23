@@ -118,13 +118,6 @@ function actualizarContadorCarrito() {
         contadorCarrito.innerText = totalProductos;
     }
 }
-
-// Evento para procesar la compra
-document.getElementById("procesar-compra").addEventListener("click", function() {
-    alert("✅ ¡Compra procesada con éxito!");
-    localStorage.removeItem("carrito");
-    cargarCarrito();
-});
 // Obtiene el stock de un accesorio desde la API
 async function obtenerStockDesdeAPI(id) {
     try {
@@ -204,14 +197,370 @@ async function actualizarCantidad(id, cantidad) {
     guardarCarritoEnLocalStorage(carrito);
     mostrarCarrito(carrito);
     actualizarContadorCarrito();
-}/*
-function getHeaders() {
-    return {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': localStorage.token
-    };
-}*/
+}
+/*document.getElementById("procesar-compra").addEventListener("click", async function() {
+    const carrito = obtenerCarritoDesdeLocalStorage();
+
+    if (!carrito.length) {
+        alert("⚠️ El carrito está vacío. Agrega productos antes de comprar.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("⚠️ Debes iniciar sesión para realizar una compra.");
+        return;
+    }
+
+    try {
+        const usuario = await obtenerUsuario();
+        if (!usuario) {
+            alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
+            return;
+        }
+
+        const orden = {
+            productos: carrito.map(item => ({
+                id: item.id,
+                cantidad: item.cantidad,
+                precio: item.precio
+            })),
+            vendedor: "Vendedor no especificado",
+            datosEmpresa: "Empresa no especificada",
+            fecha: new Date().toISOString().split("T")[0],
+            precioVenta: calcularPrecioVenta(carrito),
+            subtotal: calcularSubtotal(carrito),
+            descuento: calcularDescuento(carrito),
+            impuesto: calcularImpuesto(carrito),
+            total: calcularTotal(carrito),
+            usuario: usuario,
+            cliente: null
+        };
+
+        const response = await fetch("api/ordenes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(orden)
+        });
+
+        if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
+
+        const resultado = await response.json();
+        alert("✅ Compra realizada con éxito. ID de orden: " + resultado.id);
+
+        localStorage.removeItem("carrito");
+        cargarCarrito();
+    } catch (error) {
+        console.error("❌ Error al procesar la compra:", error);
+        alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
+    }
+});*//*
+document.getElementById("procesar-compra").addEventListener("click", async function() {
+    const carrito = obtenerCarritoDesdeLocalStorage();
+
+    if (!carrito.length) {
+        alert("⚠️ El carrito está vacío. Agrega productos antes de comprar.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("⚠️ Debes iniciar sesión para realizar una compra.");
+        return;
+    }
+
+    try {
+        const usuario = await obtenerUsuario();
+        if (!usuario) {
+            alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
+            return;
+        }
+
+        // Construir la orden de compra
+        const orden = {
+            productos: carrito.map(item => ({
+                id_accesorio: item.id,
+                cantidad: item.cantidad
+            })),
+            vendedor: "Vendedor no especificado",
+            datosEmpresa: "Empresa no especificada",
+            fecha: new Date().toISOString().split("T")[0],
+            precioVenta: calcularPrecioVenta(carrito),
+            subtotal: calcularSubtotal(carrito),
+            descuento: calcularDescuento(carrito),
+            impuesto: calcularImpuesto(carrito),
+            total: calcularTotal(carrito),
+            usuario: usuario,
+        };
+
+        // Enviar la orden al backend
+        const response = await fetch("api/ordenes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(orden)
+        });
+
+        if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
+
+        const resultado = await response.json();
+        console.log("Respuesta de la API:", resultado);
+        // Usa la clave correcta
+const idOrden = resultado.idOrdenCompra;
+        alert("✅ Compra realizada con éxito. ID de orden: " + resultado.id);
+    if (!idOrden) {
+    console.error("No se recibió un ID de orden válido:", resultado);
+    alert("❌ Error: No se pudo obtener el ID de la orden.");
+} else {
+    alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
+    }
+        // Ahora asociamos los accesorios con la orden creada
+        for (let item of carrito) {
+            await fetch("api/accesorios-ordenes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify({
+                    id_accesorio: item.id,
+                    id_ordencompra: idOrden,
+                    cantidad: item.cantidad
+                })
+            });
+            if (!responseAccesorios.ok) {
+            const errorText = await responseAccesorios.text();
+            console.error("Error al asociar accesorio:", errorText);
+        }
+        }
+
+        localStorage.removeItem("carrito");
+        cargarCarrito();
+    } catch (error) {
+        console.error("❌ Error al procesar la compra:", error);
+        alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
+    }
+});*/
+document.getElementById("procesar-compra").addEventListener("click", async function () {
+    const carrito = obtenerCarritoDesdeLocalStorage();
+
+    if (!carrito.length) {
+        alert("⚠️ El carrito está vacío. Agrega productos antes de comprar.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("⚠️ Debes iniciar sesión para realizar una compra.");
+        return;
+    }
+
+    try {
+        const usuario = await obtenerUsuario();
+        if (!usuario) {
+            alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
+            return;
+        }
+
+        // Construcción de la orden de compra
+        const orden = {
+            productos: carrito.map(item => ({
+                id_accesorio: item.id,
+                cantidad: item.cantidad
+            })),
+            vendedor: "Vendedor no especificado",
+            datosEmpresa: "Empresa no especificada",
+            fecha: new Date().toISOString().split("T")[0],
+            precioVenta: calcularPrecioVenta(carrito),
+            subtotal: calcularSubtotal(carrito),
+            descuento: calcularDescuento(carrito),
+            impuesto: calcularImpuesto(carrito),
+            total: calcularTotal(carrito),
+            usuario: usuario,
+        };
+
+        // Enviar la orden al backend
+        const response = await fetch("api/ordenes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(orden)
+        });
+
+        if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
+
+        const resultado = await response.json();
+        console.log("Respuesta de la API:", resultado);
+
+        // Obtener ID de la orden de compra
+        const idOrden = resultado.idOrdenCompra || resultado.id; // Asegurar compatibilidad con nombres de clave
+        if (!idOrden) {
+            console.error("No se recibió un ID de orden válido:", resultado);
+            alert("❌ Error: No se pudo obtener el ID de la orden.");
+            return;
+        }
+
+        alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
+        for (let item of carrito) {/*
+    const accesorioData = {
+        id_accesorio: item.id,
+        id_ordencompra: idOrden,
+        cantidad: item.cantidad
+    };*/
+    const accesorioData = {
+    id: {
+        idAccesorio: item.id,
+        idOrdenCompra: idOrden
+    },
+    accesorio: item,
+    ordenCompra: { idOrdenCompra: idOrden },
+    cantidad: item.cantidad
+};
+    console.log("Orden enviada:", JSON.stringify(orden, null, 2));
+
+    console.log("Enviando accesorio:", JSON.stringify(accesorioData, null, 2));
+        // Asociar accesorios con la orden creada
+        /*for (let item of carrito) {
+            const responseAccesorios = await fetch("api/accesorios-ordenes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify({
+                    id_accesorio: item.id,
+                    id_ordencompra: idOrden,
+                    cantidad: item.cantidad
+                })
+            });
+
+            if (!responseAccesorios.ok) {
+                const errorText = await responseAccesorios.text();
+                console.error("Error al asociar accesorio:", errorText);
+            }
+        }*/
+        const responseAccesorios = await fetch("/api/accesorios-ordenes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+        },
+        body: JSON.stringify(accesorioData)
+    });
+
+    if (!responseAccesorios.ok) {
+        const errorText = await responseAccesorios.text();
+        console.error("Error al asociar accesorio:", errorText);
+    }
+    }
+        // Limpiar el carrito tras la compra
+        localStorage.removeItem("carrito");
+        cargarCarrito();
+    } catch (error) {
+        console.error("❌ Error al procesar la compra:", error.message, error.stack);
+        alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
+    }
+});
+
+// Función para calcular el precio total de venta sin descuentos
+function calcularPrecioVenta(carrito) {
+    return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+}
+
+// Función para calcular el subtotal (precio total con descuentos aplicados)
+function calcularSubtotal(carrito) {
+    return carrito.reduce((total, item) => {
+        const precioDescuento = item.descuento ? item.precio * (1 - item.descuento / 100) : item.precio;
+        return total + (precioDescuento * item.cantidad);
+    }, 0);
+}
+
+// Función para calcular el descuento total aplicado
+function calcularDescuento(carrito) {
+    return carrito.reduce((total, item) => {
+        if (item.descuento) {
+            const descuento = (item.precio * item.descuento / 100) * item.cantidad;
+            return total + descuento;
+        }
+        return total;
+    }, 0);
+}
+
+// Función para calcular el impuesto (19% del subtotal con descuentos aplicados)
+function calcularImpuesto(carrito) {
+    const subtotal = calcularSubtotal(carrito);
+    return subtotal * 0.19;
+}
+
+// Función para calcular el total a pagar
+function calcularTotal(carrito) {
+    const subtotal = calcularSubtotal(carrito);
+    const impuesto = calcularImpuesto(carrito);
+    return subtotal + impuesto;
+}
+async function obtenerUsuario() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        console.warn("⚠️ No hay token almacenado. El usuario no está autenticado.");
+        return null;
+    }
+
+    try {
+        let email;
+
+        // Intentar decodificar el token para obtener el correo
+        try {
+            const payloadBase64 = token.split(".")[1]; // Extrae el payload
+            const payloadDecoded = JSON.parse(atob(payloadBase64)); // Decodifica
+            email = payloadDecoded.email || payloadDecoded.correo || payloadDecoded.sub; // Intentar diferentes claves
+        } catch (error) {
+            console.warn("⚠️ No se pudo decodificar el token.");
+            return null;
+        }
+
+        if (!email) {
+            console.error("❌ El token no contiene un correo válido.");
+            return null;
+        }
+
+        console.log(`🔍 Buscando usuario con correo: ${email}`);
+
+        const url = `api/usuario/${encodeURIComponent(email)}`; // Codificar el correo para evitar errores
+
+        // Hacer la petición al backend
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": token,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            console.error("❌ Error al obtener usuario:", response.statusText);
+            return null;
+        }
+
+        const usuario = await response.json(); // Convertir respuesta a JSON
+        console.log("✅ Usuario obtenido:", usuario);
+        return usuario;
+
+    } catch (error) {
+        console.error("❌ Error al procesar la solicitud:", error);
+        return null;
+    }
+}
+
+
+
 
 
 

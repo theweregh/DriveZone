@@ -83,34 +83,6 @@ function actualizarContadorCarrito() {
         contadorCarrito.innerText = totalProductos;
     }
 }
-/*
-function agregarAlCarrito(id) {
-    const cantidadInput = document.getElementById(`cantidad-${id}`);
-    if (!cantidadInput) return;
-
-    let cantidad = parseInt(cantidadInput.value, 10);
-    const accesorio = accesoriosCargados.find(a => a.id === id);
-    if (!accesorio) {
-        alert("❌ Error: accesorio no encontrado");
-        return;
-    }
-
-    const stockDisponible = accesorio.stock - obtenerCantidadEnCarrito(id);
-    if (cantidad > stockDisponible) {
-        alert(`⚠️ Solo puedes agregar ${stockDisponible} unidades más.`);
-        return;
-    }
-
-    let producto = carrito.find(item => item.id === id);
-    if (producto) {
-        producto.cantidad += cantidad;
-    } else {
-        carrito.push({ id, nombre: accesorio.nombre, precio: accesorio.precioVenta, cantidad });
-    }
-
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    actualizarContadorCarrito();
-}*/
 function agregarAlCarrito(id) {
     const cantidadInput = document.getElementById(`cantidad-${id}`);
     if (!cantidadInput) return;
