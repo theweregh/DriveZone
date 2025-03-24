@@ -3,6 +3,8 @@ package com.DriveZone.DriveZone.controllers;
 import com.DriveZone.DriveZone.models.Factura;
 import com.DriveZone.DriveZone.services.FacturaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,4 +43,13 @@ public class FacturaController {
         Factura factura = facturaService.generarFactura(facturaData, idOrdenCompra);
         return ResponseEntity.ok(factura);
     }
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> descargarFactura(@PathVariable int id) {
+        byte[] pdfBytes = facturaService.generarFacturaPDF(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=factura_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
 }
