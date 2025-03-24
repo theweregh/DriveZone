@@ -292,6 +292,58 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         console.error("Error al asociar accesorio:", errorText);
     }
     }
+    // Generar la factura con los datos del cliente
+        const facturaData = {
+            empresaNombre: usuario.nombre || usuario.nombres,
+            nit: usuario.cedula || usuario.nit,
+            direccion: usuario.direccion,
+            metodoPago: "Tarjeta de crédito",
+            subtotal: orden.subtotal,
+            descuento: orden.descuento,
+            impuestos: orden.impuesto,
+            total: orden.total,
+            ordenCompra: orden
+        };
+
+        console.log("Factura a enviar:", facturaData);
+        const facturaResponse = await fetch(`/api/facturas/${idOrden}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(facturaData)
+        });
+
+        if (!facturaResponse.ok) {
+            console.error("Error al generar factura:", await facturaResponse.text());
+        } else {
+            alert("✅ Factura generada correctamente.");
+        }
+        /*for (let item of carrito) {
+    const stockData = {
+    id: item.id,
+    stock: item.stock
+};*/
+        const stockData = carrito.map(item => ({
+    id: item.id,   // Asegúrate de que el backend espera "id", no "id_accesorio"
+    stock: item.cantidad
+}));
+        console.log("carrito enviada:", JSON.stringify(stockData, null, 2));
+        // Reducir el stock de los accesorios comprados
+        const stockResponse = await fetch("/api/accesorios/reducir-stock", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(stockData)
+            });
+        if (!stockResponse.ok) {
+            console.error("Error al reducir stock:", await stockResponse.text());
+        } else {
+            console.log("✅ Stock actualizado correctamente.");
+        }
         // Limpiar el carrito tras la compra
         localStorage.removeItem("carrito");
         cargarCarrito();
