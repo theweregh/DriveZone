@@ -319,6 +319,17 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             console.error("Error al generar factura:", await facturaResponse.text());
         } else {
             alert("✅ Factura generada correctamente.");
+            const factura = await facturaResponse.json();  // Obtener la factura creada
+    const idFactura = factura.idFactura || factura.id;  // Ajusta según el campo correcto
+
+    if (!idFactura) {
+        console.error("❌ No se pudo obtener la ID de la factura.");
+    } else {
+        alert("✅ Factura generada correctamente.");
+
+        // 📥 Descargar la factura en PDF con la ID correcta
+        descargarFactura(idFactura);
+    }
         }
         /*for (let item of carrito) {
     const stockData = {
@@ -441,6 +452,32 @@ async function obtenerUsuario() {
         console.error("❌ Error al procesar la solicitud:", error);
         return null;
     }
+}
+
+function descargarFactura(idFactura) {
+    const url = `/api/facturas/${idFactura}/pdf`;
+
+    fetch(url, {
+        method: "GET",
+        headers:  getHeaders()
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `factura_${idFactura}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    })
+    .catch(error => console.error("❌ Error al descargar la factura:", error));
+}
+function getHeaders() {
+    return {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.token
+    };
 }
 
 
