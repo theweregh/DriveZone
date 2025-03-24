@@ -4,6 +4,7 @@ import com.DriveZone.DriveZone.dao.AccesorioDao;
 import com.DriveZone.DriveZone.models.Accesorio;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,5 +66,57 @@ public class AccesorioController {
         String userId = jwtUtil.getKey(token);
         //se puede verificar si este user esta en la db
         return userId != null;
+    }/*
+    @PutMapping("/api/accesorios/reducir-stock")
+    public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).body("Acceso no autorizado");
+        }
+
+        for (Accesorio item : accesorios) {
+            Accesorio accesorio = accesorioDao.findById(item.getId()).orElse(null);
+            if (accesorio != null) {
+                int nuevoStock = accesorio.getStock() - item.getStock();
+                if (nuevoStock < 0) {
+                    return ResponseEntity.badRequest().body("Stock insuficiente para " + accesorio.getNombre());
+                }
+                accesorio.setStock(nuevoStock);
+                accesorioDao.save(accesorio);
+            }
+        }
+        return ResponseEntity.ok("Stock actualizado correctamente");
+    }*/
+    @PutMapping("/api/accesorios/reducir-stock")
+public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
+    if (!validarToken(token)) {
+        return ResponseEntity.status(403).body("Acceso no autorizado");
     }
+
+    boolean stockModificado = false; // Bandera para saber si al menos un accesorio se modificó
+
+    for (Accesorio item : accesorios) {
+        Accesorio accesorio = accesorioDao.findById(item.getId()).orElse(null);
+        System.out.println("Accesorio encontrado: " + accesorio);
+        System.out.println("Item recibido: " + item);
+        if (accesorio != null) {
+            int nuevoStock = accesorio.getStock() - item.getStock();
+            System.out.println("Stock actual para " + accesorio.getNombre() + ": " + accesorio.getStock());
+            System.out.println("Stock a reducir para " + accesorio.getNombre() + ": " + item.getStock());
+            System.out.println("Nuevo stock para " + accesorio.getNombre() + ": " + nuevoStock);
+            if (nuevoStock < 0) {
+                return ResponseEntity.badRequest().body("Stock insuficiente para " + accesorio.getNombre());
+            }
+            accesorio.setStock(nuevoStock);
+            accesorioDao.save(accesorio);
+            stockModificado = true; // Se modificó al menos un accesorio
+        }
+    }
+
+    if (!stockModificado) {
+        return ResponseEntity.badRequest().body("No se encontró ningún accesorio válido para reducir stock.");
+    }
+
+    return ResponseEntity.ok("Stock actualizado correctamente");
+}
+
 }

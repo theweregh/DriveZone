@@ -212,108 +212,6 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         return;
     }
 
-    try {
-        const usuario = await obtenerUsuario();
-        if (!usuario) {
-            alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
-            return;
-        }
-
-        // Construcción de la orden de compra
-        const orden = {
-            productos: carrito.map(item => ({
-                id_accesorio: item.id,
-                cantidad: item.cantidad
-            })),
-            vendedor: "Vendedor no especificado",
-            datosEmpresa: "Empresa no especificada",
-            fecha: new Date().toISOString().split("T")[0],
-            precioVenta: calcularPrecioVenta(carrito),
-            subtotal: calcularSubtotal(carrito),
-            descuento: calcularDescuento(carrito),
-            impuesto: calcularImpuesto(carrito),
-            total: calcularTotal(carrito),
-            //cliente : aca pones el cliente despues de hacer la peticion
-        };
-
-        // Enviar la orden al backend
-        const response = await fetch("api/ordenes", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-            body: JSON.stringify(orden)
-        });
-
-        if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
-
-        const resultado = await response.json();
-        console.log("Respuesta de la API:", resultado);
-
-        // Obtener ID de la orden de compra
-        const idOrden = resultado.idOrdenCompra || resultado.id; // Asegurar compatibilidad con nombres de clave
-        if (!idOrden) {
-            console.error("No se recibió un ID de orden válido:", resultado);
-            alert("❌ Error: No se pudo obtener el ID de la orden.");
-            return;
-        }
-
-        alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
-        for (let item of carrito) {/*
-    const accesorioData = {
-        id_accesorio: item.id,
-        id_ordencompra: idOrden,
-        cantidad: item.cantidad
-    };*//*
-    const accesorioData = {
-    id: {
-        idAccesorio: item.id,
-        idOrdenCompra: idOrden
-    },
-    accesorio: item,
-    ordenCompra: { idOrdenCompra: idOrden },
-    cantidad: item.cantidad
-};
-    console.log("Orden enviada:", JSON.stringify(orden, null, 2));
-
-    console.log("Enviando accesorio:", JSON.stringify(accesorioData, null, 2));
-        const responseAccesorios = await fetch("/api/accesorios-ordenes", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: JSON.stringify(accesorioData)
-    });
-
-    if (!responseAccesorios.ok) {
-        const errorText = await responseAccesorios.text();
-        console.error("Error al asociar accesorio:", errorText);
-    }
-    }
-        // Limpiar el carrito tras la compra
-        localStorage.removeItem("carrito");
-        cargarCarrito();
-    } catch (error) {
-        console.error("❌ Error al procesar la compra:", error.message, error.stack);
-        alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
-    }
-});*//*
-document.getElementById("procesar-compra").addEventListener("click", async function () {
-    const carrito = obtenerCarritoDesdeLocalStorage();
-
-    if (!carrito.length) {
-        alert("⚠️ El carrito está vacío. Agrega productos antes de comprar.");
-        return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-        alert("⚠️ Debes iniciar sesión para realizar una compra.");
-        return;
-    }
-
     const clienteId = document.getElementById("cliente-id").value.trim();
     if (!clienteId) {
         alert("⚠️ Debes ingresar un ID de cliente.");
@@ -321,7 +219,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
     }
 
     try {
-        // Obtener cliente
+        // Obtener datos del cliente seleccionado
         const clienteResponse = await fetch(`/clientes/${clienteId}`, {
             method: "GET",
             headers: { "Authorization": token }
@@ -337,7 +235,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         // Obtener datos del usuario autenticado
         const usuario = await obtenerUsuario();
         if (!usuario) {
-            alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
+            alert("❌ No se pudo obtener la información del usuario.");
             return;
         }
 
@@ -371,6 +269,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
 
         const resultado = await response.json();
+        console.log("Orden de compra creada:", resultado);
         const idOrden = resultado.idOrdenCompra || resultado.id;
 
         if (!idOrden) {
@@ -380,30 +279,31 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
 
         alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
 
-        // Asignar accesorios a la orden
-        for (let item of carrito) {
-            const accesorioData = {
-                id: {
-                    idAccesorio: item.id,
-                    idOrdenCompra: idOrden
-                },
-                accesorio: item,
-                ordenCompra: { idOrdenCompra: idOrden },
-                cantidad: item.cantidad
-            };
-
-            const responseAccesorios = await fetch("/api/accesorios-ordenes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": token
-                },
-                body: JSON.stringify(accesorioData)
-            });
-
-            if (!responseAccesorios.ok) {
-                console.error("Error al asociar accesorio:", await responseAccesorios.text());
-            }
+        // Generar la factura con los datos del cliente
+        const facturaData = {
+            empresaNombre: clienteData.nombre || clienteData.razonSocial,
+            nit: clienteData.cedula || clienteData.nit,
+            direccion: clienteData.direccion,
+            metodoPago: "Tarjeta de crédito",
+            subtotal: orden.subtotal,
+            descuento: orden.descuento,
+            impuestos: orden.impuesto,
+            total: orden.total,
+            ordenCompra: orden
+        };
+        console.log("Factura a enviar:", facturaData);
+        const facturaResponse = await fetch(`/api/facturas/${idOrden}`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": token
+    },
+    body: JSON.stringify(facturaData)
+});
+        if (!facturaResponse.ok) {
+            console.error("Error al generar factura:", await facturaResponse.text());
+        } else {
+            alert("✅ Factura generada correctamente.");
         }
 
         // Limpiar el carrito tras la compra
@@ -495,7 +395,38 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         }
 
         alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
+        for (let item of carrito) {/*
+    const accesorioData = {
+        id_accesorio: item.id,
+        id_ordencompra: idOrden,
+        cantidad: item.cantidad
+    };*/
+    const accesorioData = {
+    id: {
+        idAccesorio: item.id,
+        idOrdenCompra: idOrden
+    },
+    accesorio: item,
+    ordenCompra: { idOrdenCompra: idOrden },
+    cantidad: item.cantidad
+};
+    console.log("Orden enviada:", JSON.stringify(orden, null, 2));
 
+    console.log("Enviando accesorio:", JSON.stringify(accesorioData, null, 2));
+        const responseAccesorios = await fetch("/api/accesorios-ordenes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+        },
+        body: JSON.stringify(accesorioData)
+    });
+
+    if (!responseAccesorios.ok) {
+        const errorText = await responseAccesorios.text();
+        console.error("Error al asociar accesorio:", errorText);
+    }
+    }
         // Generar la factura con los datos del cliente
         const facturaData = {
             empresaNombre: clienteData.nombre || clienteData.razonSocial,
@@ -508,38 +439,45 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             total: orden.total,
             ordenCompra: orden
         };
+
         console.log("Factura a enviar:", facturaData);
-        /*const facturaResponse = await fetch(`/api/facturas`, {
+        const facturaResponse = await fetch(`/api/facturas/${idOrden}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": token
             },
             body: JSON.stringify(facturaData)
-        });*/
-        /*const facturaResponse = await fetch(`/api/facturas`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-    },
-    body: JSON.stringify({
-        ...facturaData,  // Mantiene los datos originales de la factura
-        idOrden    // Agrega el ID de la orden de compra
-    })
-});*/
-        const facturaResponse = await fetch(`/api/facturas/${idOrden}`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-    },
-    body: JSON.stringify(facturaData)
-});
+        });
+
         if (!facturaResponse.ok) {
             console.error("Error al generar factura:", await facturaResponse.text());
         } else {
             alert("✅ Factura generada correctamente.");
+        }
+        /*for (let item of carrito) {
+    const stockData = {
+    id: item.id,
+    stock: item.stock
+};*/
+        const stockData = carrito.map(item => ({
+    id: item.id,   // Asegúrate de que el backend espera "id", no "id_accesorio"
+    stock: item.cantidad
+}));
+        console.log("carrito enviada:", JSON.stringify(stockData, null, 2));
+        // Reducir el stock de los accesorios comprados
+        const stockResponse = await fetch("/api/accesorios/reducir-stock", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify(stockData)
+            });
+        if (!stockResponse.ok) {
+            console.error("Error al reducir stock:", await stockResponse.text());
+        } else {
+            console.log("✅ Stock actualizado correctamente.");
         }
 
         // Limpiar el carrito tras la compra
@@ -551,7 +489,6 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
     }
 });
-
 // Función para calcular el precio total de venta sin descuentos
 function calcularPrecioVenta(carrito) {
     return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
