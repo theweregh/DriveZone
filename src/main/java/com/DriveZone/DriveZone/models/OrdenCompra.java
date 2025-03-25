@@ -70,4 +70,5 @@ public class OrdenCompra {
     @ManyToOne
     @JoinColumn(name = "Cliente_idCliente")
     private Cliente cliente;
+
 }

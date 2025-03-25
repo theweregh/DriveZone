@@ -25,4 +25,7 @@ public class AccesorioHasOrdenCompra  {
 
     @Column(name = "cantidad", nullable = false)
     private int cantidad;
+
+
+    
 }

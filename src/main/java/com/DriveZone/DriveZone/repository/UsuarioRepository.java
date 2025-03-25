@@ -35,4 +35,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * @return {@code true} si el correo ya está registrado, {@code false} en caso contrario.
      */
     boolean existsByCorreo(String correo);
+
+    
 }

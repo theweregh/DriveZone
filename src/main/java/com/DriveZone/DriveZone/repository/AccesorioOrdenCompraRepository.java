@@ -12,4 +12,5 @@ import java.util.List;
 public interface AccesorioOrdenCompraRepository extends JpaRepository<AccesorioHasOrdenCompra , AccesorioHasOrdenCompraId   > {
     // Buscar por id_ordencompra dentro de la clave compuesta
     List<AccesorioHasOrdenCompra> findById_IdOrdenCompra(int idOrdenCompra);
+    
 }

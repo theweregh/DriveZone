@@ -11,7 +11,7 @@ import java.util.List;
  * Extiende {@link JpaRepository} para proporcionar operaciones CRUD sobre la base de datos.
  */
 @Repository
-public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     /**
      * Busca clientes cuyo nombre, apellido o cédula coincidan parcial o totalmente con el valor proporcionado.
      *

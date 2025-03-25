@@ -81,7 +81,6 @@ function actualizarCantidad(id, cantidad) {
         console.warn("⚠️ Cantidad inválida, se mantiene el valor anterior.");
         return;
     }
-
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     let producto = carrito.find(item => item.id === id);
 
@@ -330,13 +329,22 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
     }
 
     const clienteId = document.getElementById("cliente-id").value.trim();
+    const emailCliente = document.getElementById("email-cliente").value.trim();
+
     if (!clienteId) {
         alert("⚠️ Debes ingresar un ID de cliente.");
         return;
     }
 
+    if (!emailCliente) {
+        alert("⚠️ Debes ingresar un correo electrónico.");
+        return;
+    }
+
     try {
-        // Obtener datos del cliente seleccionado
+        console.log("✅ Cliente ID:", clienteId, "📩 Correo:", emailCliente);
+
+        // Obtener datos del cliente
         const clienteResponse = await fetch(`/clientes/${clienteId}`, {
             method: "GET",
             headers: { "Authorization": token }
@@ -356,14 +364,14 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             return;
         }
 
-        // Construcción de la orden de compra
+        // Crear la orden de compra
         const orden = {
             productos: carrito.map(item => ({
                 id_accesorio: item.id,
                 cantidad: item.cantidad
             })),
             vendedor: usuario.nombres,
-            datosEmpresa: "Empresa no especificada",
+            datosEmpresa: "DriveZone",
             fecha: new Date().toISOString().split("T")[0],
             precioVenta: calcularPrecioVenta(carrito),
             subtotal: calcularSubtotal(carrito),
@@ -373,7 +381,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             cliente: clienteData
         };
 
-        // Enviar la orden al backend
+        // Enviar orden de compra
         const response = await fetch("/api/ordenes", {
             method: "POST",
             headers: {
@@ -386,48 +394,15 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         if (!response.ok) throw new Error(`Error en la compra (${response.status})`);
 
         const resultado = await response.json();
-        console.log("Orden de compra creada:", resultado);
         const idOrden = resultado.idOrdenCompra || resultado.id;
-
         if (!idOrden) {
             alert("❌ Error: No se pudo obtener el ID de la orden.");
             return;
         }
 
         alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
-        for (let item of carrito) {/*
-    const accesorioData = {
-        id_accesorio: item.id,
-        id_ordencompra: idOrden,
-        cantidad: item.cantidad
-    };*/
-    const accesorioData = {
-    id: {
-        idAccesorio: item.id,
-        idOrdenCompra: idOrden
-    },
-    accesorio: item,
-    ordenCompra: { idOrdenCompra: idOrden },
-    cantidad: item.cantidad
-};
-    console.log("Orden enviada:", JSON.stringify(orden, null, 2));
 
-    console.log("Enviando accesorio:", JSON.stringify(accesorioData, null, 2));
-        const responseAccesorios = await fetch("/api/accesorios-ordenes", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-        },
-        body: JSON.stringify(accesorioData)
-    });
-
-    if (!responseAccesorios.ok) {
-        const errorText = await responseAccesorios.text();
-        console.error("Error al asociar accesorio:", errorText);
-    }
-    }
-        // Generar la factura con los datos del cliente
+        // Generar la factura
         const facturaData = {
             empresaNombre: clienteData.nombre || clienteData.razonSocial,
             nit: clienteData.cedula || clienteData.nit,
@@ -440,7 +415,8 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             ordenCompra: orden
         };
 
-        console.log("Factura a enviar:", facturaData);
+        console.log("📄 Factura a enviar:", facturaData);
+
         const facturaResponse = await fetch(`/api/facturas/${idOrden}`, {
             method: "POST",
             headers: {
@@ -451,32 +427,27 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         });
 
         if (!facturaResponse.ok) {
-            console.error("Error al generar factura:", await facturaResponse.text());
+            console.error("❌ Error al generar factura:", await facturaResponse.text());
         } else {
-            alert("✅ Factura generada correctamente.");
-            const factura = await facturaResponse.json();  // Obtener la factura creada
-    const idFactura = factura.idFactura || factura.id;  // Ajusta según el campo correcto
+            const factura = await facturaResponse.json();
+            const idFactura = factura.idFactura || factura.id;
 
-    if (!idFactura) {
-        console.error("❌ No se pudo obtener la ID de la factura.");
-    } else {
-        alert("✅ Factura generada correctamente.");
-
-        // 📥 Descargar la factura en PDF con la ID correcta
-        descargarFactura(idFactura);
-    }
+            if (!idFactura) {
+                console.error("❌ No se pudo obtener la ID de la factura.");
+            } else {
+                alert("✅ Factura generada correctamente.");
+                console.log("📨 Enviando factura por correo...");
+                // Enviar factura por correo
+                await enviarFacturaPorCorreo(idFactura, emailCliente);
+            }
         }
-        /*for (let item of carrito) {
-    const stockData = {
-    id: item.id,
-    stock: item.stock
-};*/
+
+        // Reducir el stock de los productos comprados
         const stockData = carrito.map(item => ({
-    id: item.id,   // Asegúrate de que el backend espera "id", no "id_accesorio"
-    stock: item.cantidad
-}));
-        console.log("carrito enviada:", JSON.stringify(stockData, null, 2));
-        // Reducir el stock de los accesorios comprados
+            id: item.id,  // Asegúrate de que el backend espere "id" o "id_accesorio" según corresponda
+            stock: item.cantidad
+        }));
+        console.log("📉 Datos para reducir stock:", JSON.stringify(stockData, null, 2));
         const stockResponse = await fetch("/api/accesorios/reducir-stock", {
             method: "PUT",
             headers: {
@@ -484,21 +455,48 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
                 "Authorization": token
             },
             body: JSON.stringify(stockData)
-            });
+        });
         if (!stockResponse.ok) {
-            console.error("Error al reducir stock:", await stockResponse.text());
+            console.error("❌ Error al reducir stock:", await stockResponse.text());
         } else {
             console.log("✅ Stock actualizado correctamente.");
         }
+
         // Limpiar el carrito tras la compra
         localStorage.removeItem("carrito");
         cargarCarrito();
 
     } catch (error) {
-        console.error("❌ Error al procesar la compra:", error.message, error.stack);
+        console.error("❌ Error al procesar la compra:", error);
         alert("❌ No se pudo completar la compra. Inténtalo de nuevo.");
     }
 });
+
+
+
+// Función para enviar la factura por correo
+
+async function enviarFacturaPorCorreo(idFactura, emailCliente) {
+    console.log("📨 Intentando enviar factura ID:", idFactura, " al correo:", emailCliente);
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`/api/facturas/${idFactura}/enviar-correo?email=${encodeURIComponent(emailCliente)}`, {
+        method: "POST",
+        headers: { "Authorization": token }
+    });
+
+    const responseText = await response.text();
+    console.log("📨 Respuesta del servidor:", responseText);
+
+    if (!response.ok) {
+        console.error("❌ Error al enviar factura:", responseText);
+        alert("❌ No se pudo enviar la factura.");
+    } else {
+        alert(`✅ Factura enviada a ${emailCliente}`);
+    }
+}
+
 // Función para calcular el precio total de venta sin descuentos
 function calcularPrecioVenta(carrito) {
     return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
