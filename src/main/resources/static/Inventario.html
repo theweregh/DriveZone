@@ -39,9 +39,7 @@
     <div id="header"></div> <!-- Aquí se puede cargar un header si lo necesitas -->
 
     <h1 class="h3">Gestión de Accesorios</h1>
-    <button onclick="agregarAccesorio()" class="btn btn-primary" id="agregarAccesorio">Agregar Accesorio</button>
-
-
+    <button onclick="abrirModalAgregarAccesorio()" class="btn btn-primary" id="agregarAccesorio">Agregar Accesorio</button>
 
     <table id="tablaAccesorios" class="display">
         <thead>
@@ -59,18 +57,58 @@
         <tbody></tbody>
     </table>
 
-    <!-- MODAL PARA MODIFICAR ACCESORIO -->
+    <!-- MODAL PARA AGREGAR ACCESORIO -->
+    <div class="modal fade" id="modalAgregarAccesorio" tabindex="-1" aria-labelledby="modalAgregarAccesorioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarAccesorioLabel">Agregar Nuevo Accesorio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarAccesorio">
+                        <div class="mb-3">
+                            <label for="addNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="addNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addDescripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="addDescripcion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="addStock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPrecio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="addPrecio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addImagen" class="form-label">Imagen (URL)</label>
+                            <input type="text" class="form-control" id="addImagen">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addDescuento" class="form-label">Descuento</label>
+                            <input type="number" step="0.01" class="form-control" id="addDescuento">
+                        </div>
+                        <button id="btnGuardarAccesorio" type="submit" class="btn btn-success">Guardar Accesorio</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA EDITAR ACCESORIO -->
     <div class="modal fade" id="modalEditarAccesorio" tabindex="-1" aria-labelledby="modalEditarAccesorioLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditarAccesorioLabel">Modificar Accesorio</h5>
+                    <h5 class="modal-title" id="modalEditarAccesorioLabel">Editar Accesorio</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formEditarAccesorio">
                         <input type="hidden" id="editId">
-
                         <div class="mb-3">
                             <label for="editNombre" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="editNombre" required>
@@ -95,7 +133,7 @@
                             <label for="editDescuento" class="form-label">Descuento</label>
                             <input type="number" step="0.01" class="form-control" id="editDescuento">
                         </div>
-                        <button id="btnGuardarCambios" type="submit" class="btn btn-success">Guardar Cambios</button>
+                        <button id="btnActualizarAccesorio" type="submit" class="btn btn-warning">Actualizar Accesorio</button>
                     </form>
                 </div>
             </div>
@@ -105,4 +143,6 @@
     <script src="js/inventario.js"></script>
 </body>
 </html>
+
+
 
