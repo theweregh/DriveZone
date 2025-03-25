@@ -2,12 +2,14 @@ package com.DriveZone.DriveZone.controllers;
 
 import com.DriveZone.DriveZone.dao.AccesorioDao;
 import com.DriveZone.DriveZone.models.Accesorio;
+import com.DriveZone.DriveZone.services.AccesorioService;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controlador REST para gestionar los accesorios en la aplicación.
@@ -19,7 +21,8 @@ public class AccesorioController {
     private AccesorioDao accesorioDao;
     @Autowired
     private JWTUtil jwtUtil;
-
+    @Autowired
+    private AccesorioService accesorioService;
     /**
      * Obtiene un accesorio específico según su ID.
      *
@@ -118,5 +121,35 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
 
     return ResponseEntity.ok("Stock actualizado correctamente");
 }
+    @PostMapping("/accesorios")
+    public Accesorio createAccesorio(@RequestBody Accesorio accesorio) {
+        return accesorioService.saveAccesorio(accesorio);
+    }
 
+    @PutMapping("/accesorios/{id}")
+    public ResponseEntity<Accesorio> updateAccesorio(@PathVariable int id, @RequestBody Accesorio accesorioDetails) {
+        Optional<Accesorio> accesorioOptional = accesorioService.getAccesorioById(id);
+        if (accesorioOptional.isPresent()) {
+            Accesorio accesorio = accesorioOptional.get();
+            accesorio.setNombre(accesorioDetails.getNombre());
+            accesorio.setDescripcion(accesorioDetails.getDescripcion());
+            accesorio.setStock(accesorioDetails.getStock());
+            accesorio.setPrecioVenta(accesorioDetails.getPrecioVenta());
+            accesorio.setImagen(accesorioDetails.getImagen());
+            accesorio.setDescuento(accesorioDetails.getDescuento());
+            return ResponseEntity.ok(accesorioService.saveAccesorio(accesorio));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/accesorios/{id}")
+    public ResponseEntity<Void> deleteAccesorio(@PathVariable int id) {
+        if (accesorioService.getAccesorioById(id).isPresent()) {
+            accesorioService.deleteAccesorio(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
