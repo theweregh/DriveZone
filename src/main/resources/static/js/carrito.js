@@ -4,13 +4,29 @@ $(document).ready(function() {
         actualizarContadorCarrito();
     });
     cargarAccesorios();
+    // Asignar eventos a los botones de paginación
+    $("#prev-page").click(anteriorPagina);
+    $("#next-page").click(siguientePagina);
 });
 
 let accesoriosCargados = [];
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 let paginaActual = 1;
 const accesoriosPorPagina = 6;
+function siguientePagina() {
+    const totalPaginas = Math.ceil(accesoriosCargados.length / accesoriosPorPagina);
+    if (paginaActual < totalPaginas) {
+        paginaActual++;
+        mostrarAccesorios();
+    }
+}
 
+function anteriorPagina() {
+    if (paginaActual > 1) {
+        paginaActual--;
+        mostrarAccesorios();
+    }
+}
 async function cargarAccesorios() {
     try {
         const request = await fetch('/api/accesorio', { method: 'GET', headers: getHeaders() });

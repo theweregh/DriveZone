@@ -385,17 +385,6 @@ function calcularSubtotal(carrito) {
         return total + (precioDescuento * item.cantidad);
     }, 0);
 }
-
-// Función para calcular el descuento total aplicado
-/*function calcularDescuento(carrito) {
-    return carrito.reduce((total, item) => {
-        if (item.descuento) {
-            const descuento = (item.precio * item.descuento / 100) * item.cantidad;
-            return total + descuento;
-        }
-        return total;
-    }, 0);
-}*/
 async function calcularDescuento(carrito) {
     try {
         let totalDescuento = 0;
