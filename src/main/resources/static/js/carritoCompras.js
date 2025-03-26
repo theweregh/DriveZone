@@ -160,6 +160,7 @@ async function agregarAlCarrito(id, nombre, precio) {
             return;
         }
         carrito.push({ id, nombre, precio, cantidad: 1 });
+
     }
 
     guardarCarritoEnLocalStorage(carrito);
@@ -224,6 +225,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         return;
         }
         console.log("✅ Usuario autenticado ID:", usuario.id, "Rol:", usuario.rol, "📩 Correo:", emailCliente);
+        console.log("📩 descuento:", await calcularDescuento(carrito));
         // Construcción de la orden de compra
         const orden = {
             productos: carrito.map(item => ({
@@ -235,7 +237,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             fecha: new Date().toISOString().split("T")[0],
             precioVenta: calcularPrecioVenta(carrito),
             subtotal: calcularSubtotal(carrito),
-            descuento: calcularDescuento(carrito),
+            descuento: await calcularDescuento(carrito),
             impuesto: calcularImpuesto(carrito),
             total: calcularTotal(carrito),
             usuario: usuario,
@@ -385,7 +387,7 @@ function calcularSubtotal(carrito) {
 }
 
 // Función para calcular el descuento total aplicado
-function calcularDescuento(carrito) {
+/*function calcularDescuento(carrito) {
     return carrito.reduce((total, item) => {
         if (item.descuento) {
             const descuento = (item.precio * item.descuento / 100) * item.cantidad;
@@ -393,6 +395,29 @@ function calcularDescuento(carrito) {
         }
         return total;
     }, 0);
+}*/
+async function calcularDescuento(carrito) {
+    try {
+        let totalDescuento = 0;
+        for (let item of carrito) {
+            const response = await fetch(`/api/accesorio/${item.id}`, {
+                method: 'GET',
+                headers: getHeaders()
+            });
+            if (!response.ok) throw new Error(`No se pudo obtener el accesorio ID ${item.id}`);
+            const accesorio = await response.json();
+
+            if (accesorio.descuento && accesorio.descuento > 0) {
+                const descuento = (accesorio.precioVenta * accesorio.descuento / 100) * item.cantidad;
+                totalDescuento += descuento;
+                item.descuento = accesorio.descuento; // Guardamos el descuento en el carrito
+            }
+        }
+        return totalDescuento;
+    } catch (error) {
+        console.error("❌ Error al calcular descuentos:", error);
+        return 0;
+    }
 }
 
 // Función para calcular el impuesto (19% del subtotal con descuentos aplicados)
