@@ -103,7 +103,7 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
             }
             accesorio.setStock(nuevoStock);
             accesorioDao.save(accesorio);
-            accesorioService.deleteAccesorio(accesorio.getId());
+            //accesorioService.deleteAccesorio(accesorio.getId());
             stockModificado = true; // Se modificó al menos un accesorio
         }
     }

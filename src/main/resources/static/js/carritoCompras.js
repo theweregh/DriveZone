@@ -218,7 +218,12 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
             alert("❌ No se pudo obtener la información del usuario. Inténtalo de nuevo.");
             return;
         }
-
+        const emailCliente = usuario.correo;
+        if (!emailCliente) {
+        alert("⚠ Debes ingresar un correo electrónico.");
+        return;
+        }
+        console.log("✅ Usuario autenticado ID:", usuario.id, "Rol:", usuario.rol, "📩 Correo:", emailCliente);
         // Construcción de la orden de compra
         const orden = {
             productos: carrito.map(item => ({
@@ -329,6 +334,8 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
 
         // 📥 Descargar la factura en PDF con la ID correcta
         descargarFactura(idFactura);
+        console.log("📨 Enviando factura por correo...");
+        await enviarFacturaPorCorreo(idFactura, emailCliente);
     }
         }
         /*for (let item of carrito) {
@@ -471,6 +478,28 @@ function descargarFactura(idFactura) {
         document.body.removeChild(link);
     })
     .catch(error => console.error("❌ Error al descargar la factura:", error));
+}
+// Función para enviar la factura por correo
+
+async function enviarFacturaPorCorreo(idFactura, emailCliente) {
+    console.log("📨 Intentando enviar factura ID:", idFactura, " al correo:", emailCliente);
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`/api/facturas/${idFactura}/enviar-correo?email=${encodeURIComponent(emailCliente)}`, {
+        method: "POST",
+        headers: { "Authorization": token }
+    });
+
+    const responseText = await response.text();
+    console.log("📨 Respuesta del servidor:", responseText);
+
+    if (!response.ok) {
+        console.error("❌ Error al enviar factura:", responseText);
+        alert("❌ No se pudo enviar la factura.");
+    } else {
+        alert("✅ Factura enviada a ${emailCliente}");
+    }
 }
 function getHeaders() {
     return {
