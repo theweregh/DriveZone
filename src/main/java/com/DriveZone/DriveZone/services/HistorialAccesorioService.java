@@ -1,5 +1,6 @@
 package com.DriveZone.DriveZone.services;
 
+import com.DriveZone.DriveZone.models.Accion;
 import com.DriveZone.DriveZone.models.HistorialAccesorio;
 import com.DriveZone.DriveZone.repository.HistorialAccesorioRepository;
 import com.itextpdf.text.DocumentException;
@@ -21,6 +22,7 @@ import com.itextpdf.text.Document;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HistorialAccesorioService {
@@ -34,15 +36,13 @@ public class HistorialAccesorioService {
         return historialAccesorioRepository.findAll();
     }
 
-    public byte[] generarPdfHistorial() throws IOException, DocumentException {
-        List<HistorialAccesorio> historial = obtenerHistorial();
-
+    private byte[] generarPdf(List<HistorialAccesorio> historial, String titulo) throws IOException, DocumentException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Document document = new Document();
         PdfWriter.getInstance(document, outputStream);
         document.open();
 
-        document.add(new Paragraph("Historial de Accesorios"));
+        document.add(new Paragraph(titulo));
         PdfPTable table = new PdfPTable(4);
         table.addCell("ID");
         table.addCell("Acción");
@@ -58,7 +58,24 @@ public class HistorialAccesorioService {
 
         document.add(table);
         document.close();
-
         return outputStream.toByteArray();
+    }
+
+    public byte[] generarPdfHistorial() throws IOException, DocumentException {
+        return generarPdf(obtenerHistorial(), "Historial de Accesorios");
+    }
+
+    public byte[] generarPdfAgregados() throws IOException, DocumentException {
+        List<HistorialAccesorio> agregados = obtenerHistorial().stream()
+                .filter(h -> h.getAccion() == Accion.AGREGADO)
+                .collect(Collectors.toList());
+        return generarPdf(agregados, "Historial de Accesorios Agregados");
+    }
+
+    public byte[] generarPdfEliminados() throws IOException, DocumentException {
+        List<HistorialAccesorio> eliminados = obtenerHistorial().stream()
+                .filter(h -> h.getAccion() == Accion.ELIMINADO)
+                .collect(Collectors.toList());
+        return generarPdf(eliminados, "Historial de Accesorios Eliminados");
     }
 }
