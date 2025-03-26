@@ -11,6 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import com.DriveZone.DriveZone.dao.AccesorioDao;
+import com.DriveZone.DriveZone.models.Accesorio;
+import com.DriveZone.DriveZone.services.AccesorioService;
+import com.DriveZone.DriveZone.utils.JWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Controlador REST para gestionar los accesorios en la aplicación.
  * Proporciona endpoints para obtener accesorios individuales y listar todos los accesorios disponibles.
@@ -69,26 +80,7 @@ public class AccesorioController {
         String userId = jwtUtil.getKey(token);
         //se puede verificar si este user esta en la db
         return userId != null;
-    }/*
-    @PutMapping("/api/accesorios/reducir-stock")
-    public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
-        if (!validarToken(token)) {
-            return ResponseEntity.status(403).body("Acceso no autorizado");
-        }
-
-        for (Accesorio item : accesorios) {
-            Accesorio accesorio = accesorioDao.findById(item.getId()).orElse(null);
-            if (accesorio != null) {
-                int nuevoStock = accesorio.getStock() - item.getStock();
-                if (nuevoStock < 0) {
-                    return ResponseEntity.badRequest().body("Stock insuficiente para " + accesorio.getNombre());
-                }
-                accesorio.setStock(nuevoStock);
-                accesorioDao.save(accesorio);
-            }
-        }
-        return ResponseEntity.ok("Stock actualizado correctamente");
-    }*/
+    }
     @PutMapping("/api/accesorios/reducir-stock")
 public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
     if (!validarToken(token)) {
@@ -111,6 +103,7 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
             }
             accesorio.setStock(nuevoStock);
             accesorioDao.save(accesorio);
+            accesorioService.deleteAccesorio(accesorio.getId());
             stockModificado = true; // Se modificó al menos un accesorio
         }
     }
@@ -122,12 +115,19 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
     return ResponseEntity.ok("Stock actualizado correctamente");
 }
     @PostMapping("/accesorios")
-    public Accesorio createAccesorio(@RequestBody Accesorio accesorio) {
-        return accesorioService.saveAccesorio(accesorio);
+    public ResponseEntity<Accesorio> createAccesorio(@RequestBody Accesorio accesorio, @RequestHeader(value = "Authorization") String token) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(accesorioService.saveAccesorio(accesorio));
     }
 
     @PutMapping("/accesorios/{id}")
-    public ResponseEntity<Accesorio> updateAccesorio(@PathVariable int id, @RequestBody Accesorio accesorioDetails) {
+    public ResponseEntity<Accesorio> updateAccesorio(@PathVariable int id, @RequestBody Accesorio accesorioDetails, @RequestHeader(value = "Authorization") String token) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).build();
+        }
+
         Optional<Accesorio> accesorioOptional = accesorioService.getAccesorioById(id);
         if (accesorioOptional.isPresent()) {
             Accesorio accesorio = accesorioOptional.get();
@@ -144,7 +144,11 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
     }
 
     @DeleteMapping("/accesorios/{id}")
-    public ResponseEntity<Void> deleteAccesorio(@PathVariable int id) {
+    public ResponseEntity<Void> deleteAccesorio(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).build();
+        }
+
         if (accesorioService.getAccesorioById(id).isPresent()) {
             accesorioService.deleteAccesorio(id);
             return ResponseEntity.noContent().build();
@@ -153,3 +157,4 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
         }
     }
 }
+
