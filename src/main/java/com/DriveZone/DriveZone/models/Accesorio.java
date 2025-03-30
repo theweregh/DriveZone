@@ -57,4 +57,5 @@ public class Accesorio {
      */
     @Column(name = "descuento")
     private double descuento;
+    
 }
