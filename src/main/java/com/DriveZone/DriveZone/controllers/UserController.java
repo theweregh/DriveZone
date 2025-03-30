@@ -1,9 +1,9 @@
 package com.DriveZone.DriveZone.controllers;
 
 import com.DriveZone.DriveZone.dao.UsuarioDao;
-import com.DriveZone.DriveZone.models.LogBusqueda;
 import com.DriveZone.DriveZone.models.Usuario;
 import com.DriveZone.DriveZone.repository.UsuarioRepository;
+import com.DriveZone.DriveZone.services.LogBusquedaService;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -26,7 +26,7 @@ public class UserController {
     @Autowired
     private JWTUtil jwtUtil;
     @Autowired
-    private LogBusqueda logBusquedaService;
+    private LogBusquedaService logBusquedaService;
 
     /**
      * Obtiene la lista de todos los usuarios registrados en el sistema.
@@ -68,12 +68,6 @@ public class UserController {
 
         // Guardar usuario en la base de datos
         usuarioRepository.save(usuario);
-
-        // Crear carrito vacío al registrar usuario
-        /*CarritoCompra carrito = new CarritoCompra();
-        carrito.setUsuario(usuario);
-        carritoRepository.save(carrito);*/
-
         usuarioDao.registrar(usuario);
 
         return ResponseEntity.ok("✅ Usuario registrado correctamente.");
@@ -145,7 +139,7 @@ public class UserController {
         Usuario usuarioAutenticado = usuarioDao.getUserById(Integer.parseInt(userId));
 
         // Registrar la búsqueda en el log
-        LogBusqueda.registrarBusqueda(usuarioAutenticado.getUsername(), correo);
+        LogBusquedaService.registrarBusqueda(usuarioAutenticado.getUsername(), correo);
 
         return usuarioDao.obtenerUsuarioPorCorreo(correo);
     }
@@ -169,7 +163,7 @@ public class UserController {
         Usuario usuarioAutenticado = usuarioDao.getUserById(Integer.parseInt(userId));
 
         // Guardar la búsqueda en el log
-        LogBusqueda.registrarBusqueda(usuarioAutenticado.getUsername(), criterioBusqueda);
+        LogBusquedaService.registrarBusqueda(usuarioAutenticado.getUsername(), criterioBusqueda);
 
         return ResponseEntity.ok("Búsqueda registrada correctamente.");
     }

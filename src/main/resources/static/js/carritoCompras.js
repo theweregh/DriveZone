@@ -267,12 +267,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         }
 
         alert("✅ Compra realizada con éxito. ID de orden: " + idOrden);
-        for (let item of carrito) {/*
-    const accesorioData = {
-        id_accesorio: item.id,
-        id_ordencompra: idOrden,
-        cantidad: item.cantidad
-    };*/
+        for (let item of carrito) {
     const accesorioData = {
     id: {
         idAccesorio: item.id,
@@ -340,11 +335,6 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
         await enviarFacturaPorCorreo(idFactura, emailCliente);
     }
         }
-        /*for (let item of carrito) {
-    const stockData = {
-    id: item.id,
-    stock: item.stock
-};*/
         const stockData = carrito.map(item => ({
     id: item.id,   // Asegúrate de que el backend espera "id", no "id_accesorio"
     stock: item.cantidad
@@ -522,9 +512,5 @@ function getHeaders() {
         'Authorization': localStorage.token
     };
 }
-
-
-
-
 
 

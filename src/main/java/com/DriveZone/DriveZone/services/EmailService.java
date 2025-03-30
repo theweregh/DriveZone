@@ -7,16 +7,36 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Servicio para el envío de correos electrónicos.
+ * <p>
+ * Permite enviar facturas en formato PDF adjunto a los clientes.
+ * </p>
+ *
+ * @author DriveZone Team
+ * @version 1.1
+ * @since 2025-03-30
+ */
 @Service
 public class EmailService {
-
+    /**
+     * Dirección de correo electrónico utilizada como remitente.
+     */
+    private static final String REMITENTE = "zone.drive@yandex.com"; // Tu correo de Yandex
     @Autowired
     private JavaMailSender mailSender;
 
-    private static final String REMITENTE = "zone.drive@yandex.com"; // Tu correo de Yandex
-
+    /**
+     * Envía un correo con una factura adjunta en formato PDF.
+     *
+     * @param destinatario  Dirección de correo del receptor.
+     * @param pdfAdjunto    Archivo PDF en formato de bytes.
+     * @param nombreFactura Nombre del archivo adjunto.
+     * @throws MessagingException Si ocurre un error en el envío del correo.
+     */
     public void enviarFacturaPorCorreo(String destinatario, byte[] pdfAdjunto, String nombreFactura) throws MessagingException {
         // Crear el mensaje
         MimeMessage mensaje = mailSender.createMimeMessage();

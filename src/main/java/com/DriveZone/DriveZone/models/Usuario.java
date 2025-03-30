@@ -1,16 +1,29 @@
 package com.DriveZone.DriveZone.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * Representa un usuario dentro del sistema.
+ * <p>
+ * Esta entidad almacena la información de los usuarios que interactúan con el sistema,
+ * incluyendo credenciales, datos personales y su rol dentro de la plataforma.
+ * </p>
+ *
+ * <h2>Ejemplo de uso:</h2>
+ * <pre>
+ *     Usuario usuario = new Usuario();
+ *     usuario.setUsername("juan.perez");
+ *     usuario.setCorreo("juan.perez@example.com");
+ *     usuario.setRol("ADMIN");
+ * </pre>
+ *
+ * @author DriveZone Team
+ * @version 1.1
+ * @since 2025-03-30
  */
 @Entity
 @Table(name = "usuario")
@@ -71,6 +84,7 @@ public class Usuario {
      */
     @Column(name = "rol")
     private String rol;
+
     /**
      * Constructor que permite crear un usuario con un identificador específico.
      *

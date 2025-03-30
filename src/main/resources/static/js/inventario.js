@@ -61,37 +61,6 @@ function llenarTabla(accesorios) {
 function abrirModalAgregarAccesorio() {
     new bootstrap.Modal(document.getElementById("modalAgregarAccesorio")).show();
 }
-
-/* ✅ Agregar accesorio *//*
-document.getElementById("formAgregarAccesorio").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const nuevoAccesorio = {
-        nombre: document.getElementById("addNombre").value,
-        descripcion: document.getElementById("addDescripcion").value,
-        stock: parseInt(document.getElementById("addStock").value),
-        precioVenta: parseFloat(document.getElementById("addPrecio").value),
-        imagen: document.getElementById("addImagen").value,
-        descuento: parseFloat(document.getElementById("addDescuento").value)
-    };
-
-    try {
-        const response = await fetch("/accesorios", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": token },
-            body: JSON.stringify(nuevoAccesorio)
-        });
-
-        if (!response.ok) throw new Error("Error al agregar el accesorio");
-
-        alert("Accesorio agregado correctamente");
-        cargarAccesorios();
-        bootstrap.Modal.getInstance(document.getElementById("modalAgregarAccesorio")).hide();
-    } catch (error) {
-        console.error(error);
-        alert("Hubo un problema al agregar el accesorio.");
-    }
-});*/
 /* ✅ Agregar accesorio */
 document.getElementById("formAgregarAccesorio").addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -154,38 +123,6 @@ function abrirModalEditar(id) {
 
     new bootstrap.Modal(document.getElementById("modalEditarAccesorio")).show();
 }
-
-/* ✅ Editar accesorio *//*
-document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const id = document.getElementById("editId").value;
-    const accesorioActualizado = {
-        nombre: document.getElementById("editNombre").value,
-        descripcion: document.getElementById("editDescripcion").value,
-        stock: parseInt(document.getElementById("editStock").value),
-        precioVenta: parseFloat(document.getElementById("editPrecio").value),
-        imagen: document.getElementById("editImagen").value,
-        descuento: parseFloat(document.getElementById("editDescuento").value)
-    };
-
-    try {
-        const response = await fetch(`/accesorios/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", "Authorization": token },
-            body: JSON.stringify(accesorioActualizado)
-        });
-
-        if (!response.ok) throw new Error("Error al actualizar el accesorio");
-
-        alert("Accesorio actualizado correctamente");
-        cargarAccesorios();
-        bootstrap.Modal.getInstance(document.getElementById("modalEditarAccesorio")).hide();
-    } catch (error) {
-        console.error(error);
-        alert("Hubo un problema al actualizar el accesorio.");
-    }
-});*/
 /* ✅ Editar accesorio */
 document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
     e.preventDefault();

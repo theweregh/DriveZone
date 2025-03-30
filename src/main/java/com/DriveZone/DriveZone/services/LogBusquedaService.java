@@ -1,4 +1,4 @@
-package com.DriveZone.DriveZone.models;
+package com.DriveZone.DriveZone.services;
 
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * @since 2025-03-08
  */
 @Service
-public class LogBusqueda {
+public class LogBusquedaService {
     /**
      * Ruta del archivo donde se almacenan los logs de búsqueda.
      */
@@ -43,7 +43,7 @@ public class LogBusqueda {
     /**
      * Logger para capturar errores en la escritura del log.
      */
-    private static final Logger LOGGER = Logger.getLogger(LogBusqueda.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LogBusquedaService.class.getName());
 
     /**
      * Registra una búsqueda realizada por un usuario en el archivo de logs.
@@ -58,8 +58,8 @@ public class LogBusqueda {
      *
      *                     <h2>Ejemplo de uso:</h2>
      *                     <pre>
-     *                         logBusqueda.registrarBusqueda("Carlos López", "Filtro de aire K&N");
-     *                     </pre>
+     *                                             logBusqueda.registrarBusqueda("Carlos López", "Filtro de aire K&N");
+     *                                         </pre>
      */
     public static void registrarBusqueda(String usuario, String criterioBusqueda) {
         try {
@@ -77,5 +77,5 @@ public class LogBusqueda {
         }
     }
 
-    
+
 }

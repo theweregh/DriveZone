@@ -138,8 +138,6 @@ function modificarUsuario(id) {
     console.log("Usuario encontrado:", usuario);
 
     // Llenar el formulario con los datos actuales
-    //document.getElementById("edit-id").value = usuario.id;
-
     document.getElementById("editUsername").value = usuario.username;
     document.getElementById("editNombres").value = usuario.nombres;
     document.getElementById("editCedula").value = usuario.cedula;
@@ -258,11 +256,7 @@ function guardarCambiosUsuario(id) {
 
         // Actualizar lista de usuarios
         cargarUsuarios();
-    })/*
-    .catch(error => {
-        console.error("Error en la actualización:", error);
-        alert("Error al actualizar usuario.");
-    });*/
+    })¿
 }
 function validarCorreo(email) {
     const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/;

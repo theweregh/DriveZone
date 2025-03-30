@@ -8,20 +8,33 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST para la gestión de órdenes de compra.
+ * Proporciona endpoints para obtener, crear y eliminar órdenes de compra en el sistema.
+ */
 @RestController
 @RequestMapping("/api/ordenes")
 public class OrdenCompraController {
     @Autowired
     private OrdenCompraService ordenCompraService;
 
-    // Obtener todas las órdenes de compra
+    /**
+     * Obtiene todas las órdenes de compra disponibles.
+     *
+     * @return {@link ResponseEntity} con la lista de todas las órdenes de compra registradas.
+     */
     @GetMapping
     public ResponseEntity<List<OrdenCompra>> obtenerOrdenes() {
         List<OrdenCompra> ordenes = ordenCompraService.obtenerTodasLasOrdenes();
         return ResponseEntity.ok(ordenes);
     }
 
-    // Obtener una orden por ID
+    /**
+     * Obtiene una orden de compra por su ID.
+     *
+     * @param id Identificador de la orden de compra.
+     * @return {@link ResponseEntity} con la orden de compra si se encuentra, o un estado 404 si no existe.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OrdenCompra> obtenerOrdenPorId(@PathVariable Integer id) {
         return ordenCompraService.obtenerOrdenPorId(id)
@@ -29,14 +42,24 @@ public class OrdenCompraController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Crear una nueva orden de compra
+    /**
+     * Crea una nueva orden de compra.
+     *
+     * @param orden Objeto {@link OrdenCompra} con la información de la nueva orden.
+     * @return {@link ResponseEntity} con la orden de compra creada.
+     */
     @PostMapping
     public ResponseEntity<OrdenCompra> crearOrden(@RequestBody OrdenCompra orden) {
         OrdenCompra nuevaOrden = ordenCompraService.crearOrden(orden);
         return ResponseEntity.ok(nuevaOrden);
     }
 
-    // Eliminar una orden de compra por ID
+    /**
+     * Elimina una orden de compra por su ID.
+     *
+     * @param id Identificador de la orden de compra a eliminar.
+     * @return {@link ResponseEntity} con un estado 204 si la eliminación fue exitosa.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarOrden(@PathVariable Integer id) {
         ordenCompraService.eliminarOrden(id);

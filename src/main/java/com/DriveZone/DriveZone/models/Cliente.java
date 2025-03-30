@@ -57,9 +57,9 @@ public class Cliente {
     private String telefono;
 
     /**
- * Estado del cliente (activo, inactivo o fuera de servicio)
- */
-@Enumerated(EnumType.STRING)
-@Column(nullable = false)
-private EstadoCliente estado;
+     * Estado del cliente (activo, inactivo o fuera de servicio)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoCliente estado;
 }

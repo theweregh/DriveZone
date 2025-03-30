@@ -392,17 +392,6 @@ function calcularSubtotal(carrito) {
         return total + (precioDescuento * item.cantidad);
     }, 0);
 }
-
-// Función para calcular el descuento total aplicado
-/*function calcularDescuento(carrito) {
-    return carrito.reduce((total, item) => {
-        if (item.descuento) {
-            const descuento = (item.precio * item.descuento / 100) * item.cantidad;
-            return total + descuento;
-        }
-        return total;
-    }, 0);
-}*/
 async function calcularDescuento(carrito) {
     try {
         let totalDescuento = 0;
@@ -490,37 +479,7 @@ async function obtenerUsuario() {
         console.error("❌ Error al procesar la solicitud:", error);
         return null;
     }
-}/*
-async function descargarFactura(id) {
-    try {
-        const response = await fetch(`/api/facturas/${id}/pdf`, {
-            method: "GET",
-            headers: {
-                "Authorization": token // Si necesitas autenticación, agrega el token aquí
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al descargar la factura");
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        // Crear un enlace temporal para descargar el archivo
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `factura_${id}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-
-        console.log("✅ Factura descargada correctamente.");
-    } catch (error) {
-        console.error("❌ Error al descargar la factura:", error);
-    }
-}*/
+}
 function descargarFactura(idFactura) {
     const url = `/api/facturas/${idFactura}/pdf`;
 

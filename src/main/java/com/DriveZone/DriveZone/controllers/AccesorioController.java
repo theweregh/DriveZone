@@ -11,17 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.DriveZone.DriveZone.dao.AccesorioDao;
-import com.DriveZone.DriveZone.models.Accesorio;
-import com.DriveZone.DriveZone.services.AccesorioService;
-import com.DriveZone.DriveZone.utils.JWTUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-
 /**
  * Controlador REST para gestionar los accesorios en la aplicación.
  * Proporciona endpoints para obtener accesorios individuales y listar todos los accesorios disponibles.
@@ -34,22 +23,23 @@ public class AccesorioController {
     private JWTUtil jwtUtil;
     @Autowired
     private AccesorioService accesorioService;
+
     /**
      * Obtiene un accesorio específico según su ID.
      *
-     * @param id Identificador del accesorio a recuperar.
-     * @return El accesorio correspondiente al ID proporcionado.
+     * @param id    Identificador del accesorio a recuperar.
+     * @param token Token JWT de autorización enviado en la solicitud.
+     * @return El accesorio correspondiente al ID proporcionado o {@code null} si no se encuentra o el token no es válido.
      */
     @RequestMapping(value = "api/accesorio/{id}", method = RequestMethod.GET)
     public Accesorio getAccesorio(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
         System.out.println("Token recibido: " + token);
-    String userId = jwtUtil.getKey(token);
-    System.out.println("Usuario ID extraído: " + userId);
-    if (!validarToken(token)) {
-        return null;
-    }
-
-    return accesorioDao.findById(id).orElse(null);
+        String userId = jwtUtil.getKey(token);
+        System.out.println("Usuario ID extraído: " + userId);
+        if (!validarToken(token)) {
+            return null;
+        }
+        return accesorioDao.findById(id).orElse(null);
     }
 
     /**
@@ -66,7 +56,6 @@ public class AccesorioController {
         if (!validarToken(token)) {
             return null;
         }
-
         return accesorioDao.findAll();
     }
 
@@ -81,39 +70,54 @@ public class AccesorioController {
         //se puede verificar si este user esta en la db
         return userId != null;
     }
+
+    /**
+     * Reduce el stock de una lista de accesorios.
+     *
+     * @param accesorios Lista de accesorios con las cantidades a reducir.
+     * @param token      Token JWT de autorización enviado en la solicitud.
+     * @return Respuesta con estado HTTP y mensaje indicando el resultado de la operación.
+     */
     @PutMapping("/api/accesorios/reducir-stock")
-public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
-    if (!validarToken(token)) {
-        return ResponseEntity.status(403).body("Acceso no autorizado");
-    }
-
-    boolean stockModificado = false; // Bandera para saber si al menos un accesorio se modificó
-
-    for (Accesorio item : accesorios) {
-        Accesorio accesorio = accesorioDao.findById(item.getId()).orElse(null);
-        System.out.println("Accesorio encontrado: " + accesorio);
-        System.out.println("Item recibido: " + item);
-        if (accesorio != null) {
-            int nuevoStock = accesorio.getStock() - item.getStock();
-            System.out.println("Stock actual para " + accesorio.getNombre() + ": " + accesorio.getStock());
-            System.out.println("Stock a reducir para " + accesorio.getNombre() + ": " + item.getStock());
-            System.out.println("Nuevo stock para " + accesorio.getNombre() + ": " + nuevoStock);
-            if (nuevoStock < 0) {
-                return ResponseEntity.badRequest().body("Stock insuficiente para " + accesorio.getNombre());
-            }
-            accesorio.setStock(nuevoStock);
-            accesorioDao.save(accesorio);
-            //accesorioService.deleteAccesorio(accesorio.getId());
-            stockModificado = true; // Se modificó al menos un accesorio
+    public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @RequestHeader(value = "Authorization") String token) {
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).body("Acceso no autorizado");
         }
+
+        boolean stockModificado = false; // Bandera para saber si al menos un accesorio se modificó
+
+        for (Accesorio item : accesorios) {
+            Accesorio accesorio = accesorioDao.findById(item.getId()).orElse(null);
+            System.out.println("Accesorio encontrado: " + accesorio);
+            System.out.println("Item recibido: " + item);
+            if (accesorio != null) {
+                int nuevoStock = accesorio.getStock() - item.getStock();
+                System.out.println("Stock actual para " + accesorio.getNombre() + ": " + accesorio.getStock());
+                System.out.println("Stock a reducir para " + accesorio.getNombre() + ": " + item.getStock());
+                System.out.println("Nuevo stock para " + accesorio.getNombre() + ": " + nuevoStock);
+                if (nuevoStock < 0) {
+                    return ResponseEntity.badRequest().body("Stock insuficiente para " + accesorio.getNombre());
+                }
+                accesorio.setStock(nuevoStock);
+                accesorioDao.save(accesorio);
+                stockModificado = true; // Se modificó al menos un accesorio
+            }
+        }
+
+        if (!stockModificado) {
+            return ResponseEntity.badRequest().body("No se encontró ningún accesorio válido para reducir stock.");
+        }
+
+        return ResponseEntity.ok("Stock actualizado correctamente");
     }
 
-    if (!stockModificado) {
-        return ResponseEntity.badRequest().body("No se encontró ningún accesorio válido para reducir stock.");
-    }
-
-    return ResponseEntity.ok("Stock actualizado correctamente");
-}
+    /**
+     * Crea un nuevo accesorio.
+     *
+     * @param accesorio Objeto {@link Accesorio} con los datos del accesorio a crear.
+     * @param token     Token JWT de autorización enviado en la solicitud.
+     * @return El accesorio creado o un estado HTTP 403 si la autenticación falla.
+     */
     @PostMapping("/accesorios")
     public ResponseEntity<Accesorio> createAccesorio(@RequestBody Accesorio accesorio, @RequestHeader(value = "Authorization") String token) {
         if (!validarToken(token)) {
@@ -122,6 +126,14 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
         return ResponseEntity.ok(accesorioService.saveAccesorio(accesorio));
     }
 
+    /**
+     * Actualiza un accesorio existente según su ID.
+     *
+     * @param id               Identificador del accesorio a actualizar.
+     * @param accesorioDetails Objeto {@link Accesorio} con los nuevos datos.
+     * @param token            Token JWT de autorización enviado en la solicitud.
+     * @return El accesorio actualizado o un estado HTTP 404 si no se encuentra.
+     */
     @PutMapping("/accesorios/{id}")
     public ResponseEntity<Accesorio> updateAccesorio(@PathVariable int id, @RequestBody Accesorio accesorioDetails, @RequestHeader(value = "Authorization") String token) {
         if (!validarToken(token)) {
@@ -143,6 +155,13 @@ public ResponseEntity<?> reducirStock(@RequestBody List<Accesorio> accesorios, @
         }
     }
 
+    /**
+     * Elimina un accesorio según su ID.
+     *
+     * @param id    Identificador del accesorio a eliminar.
+     * @param token Token JWT de autorización enviado en la solicitud.
+     * @return Estado HTTP 204 si la eliminación fue exitosa o 404 si el accesorio no existe.
+     */
     @DeleteMapping("/accesorios/{id}")
     public ResponseEntity<Void> deleteAccesorio(@PathVariable int id, @RequestHeader(value = "Authorization") String token) {
         if (!validarToken(token)) {
