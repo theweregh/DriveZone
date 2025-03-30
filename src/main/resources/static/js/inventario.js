@@ -62,7 +62,7 @@ function abrirModalAgregarAccesorio() {
     new bootstrap.Modal(document.getElementById("modalAgregarAccesorio")).show();
 }
 
-/* ✅ Agregar accesorio */
+/* ✅ Agregar accesorio *//*
 document.getElementById("formAgregarAccesorio").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -91,8 +91,51 @@ document.getElementById("formAgregarAccesorio").addEventListener("submit", async
         console.error(error);
         alert("Hubo un problema al agregar el accesorio.");
     }
-});
+});*/
+/* ✅ Agregar accesorio */
+document.getElementById("formAgregarAccesorio").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
+    const nombre = document.getElementById("addNombre").value.trim();
+    const descripcion = document.getElementById("addDescripcion").value.trim();
+    const stock = parseInt(document.getElementById("addStock").value);
+    const precioVenta = parseFloat(document.getElementById("addPrecio").value);
+    const imagen = document.getElementById("addImagen").value.trim();
+    const descuento = parseFloat(document.getElementById("addDescuento").value);
+
+    // Validaciones
+    if (!nombre || !descripcion || !imagen) {
+        alert("Todos los campos deben estar llenos.");
+        return;
+    }
+    if (isNaN(stock) || stock < 0) {
+        alert("El stock no puede ser negativo.");
+        return;
+    }
+    if (isNaN(descuento) || descuento < 0 || descuento > 100) {
+        alert("El descuento debe estar entre 0 y 100.");
+        return;
+    }
+
+    const nuevoAccesorio = { nombre, descripcion, stock, precioVenta, imagen, descuento };
+
+    try {
+        const response = await fetch("/accesorios", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": token },
+            body: JSON.stringify(nuevoAccesorio)
+        });
+
+        if (!response.ok) throw new Error("Error al agregar el accesorio");
+
+        alert("Accesorio agregado correctamente");
+        cargarAccesorios();
+        bootstrap.Modal.getInstance(document.getElementById("modalAgregarAccesorio")).hide();
+    } catch (error) {
+        console.error(error);
+        alert("Hubo un problema al agregar el accesorio.");
+    }
+});
 /* ✅ Abrir modal de edición con datos del accesorio */
 function abrirModalEditar(id) {
     const accesorio = accesoriosExistentes.find(a => a.id === id);
@@ -112,7 +155,7 @@ function abrirModalEditar(id) {
     new bootstrap.Modal(document.getElementById("modalEditarAccesorio")).show();
 }
 
-/* ✅ Editar accesorio */
+/* ✅ Editar accesorio *//*
 document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -142,8 +185,52 @@ document.getElementById("formEditarAccesorio").addEventListener("submit", async 
         console.error(error);
         alert("Hubo un problema al actualizar el accesorio.");
     }
-});
+});*/
+/* ✅ Editar accesorio */
+document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
+    const id = document.getElementById("editId").value;
+    const nombre = document.getElementById("editNombre").value.trim();
+    const descripcion = document.getElementById("editDescripcion").value.trim();
+    const stock = parseInt(document.getElementById("editStock").value);
+    const precioVenta = parseFloat(document.getElementById("editPrecio").value);
+    const imagen = document.getElementById("editImagen").value.trim();
+    const descuento = parseFloat(document.getElementById("editDescuento").value);
+
+    // Validaciones
+    if (!nombre || !descripcion || !imagen) {
+        alert("Todos los campos deben estar llenos.");
+        return;
+    }
+    if (isNaN(stock) || stock < 0) {
+        alert("El stock no puede ser negativo.");
+        return;
+    }
+    if (isNaN(descuento) || descuento < 0 || descuento > 100) {
+        alert("El descuento debe estar entre 0 y 100.");
+        return;
+    }
+
+    const accesorioActualizado = { nombre, descripcion, stock, precioVenta, imagen, descuento };
+
+    try {
+        const response = await fetch(`/accesorios/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "Authorization": token },
+            body: JSON.stringify(accesorioActualizado)
+        });
+
+        if (!response.ok) throw new Error("Error al actualizar el accesorio");
+
+        alert("Accesorio actualizado correctamente");
+        cargarAccesorios();
+        bootstrap.Modal.getInstance(document.getElementById("modalEditarAccesorio")).hide();
+    } catch (error) {
+        console.error(error);
+        alert("Hubo un problema al actualizar el accesorio.");
+    }
+});
 /* ✅ Eliminar accesorio */
 async function eliminarAccesorio(id, nombreAccesorio) {
     if (!confirm("¿Seguro que quieres eliminar este accesorio?")) return;
@@ -163,6 +250,7 @@ async function eliminarAccesorio(id, nombreAccesorio) {
         alert("Hubo un problema al eliminar el accesorio.");
     }
 }
+
 
 
 
