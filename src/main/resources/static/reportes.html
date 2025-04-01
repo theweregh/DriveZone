@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ganancias</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="js/reportes.js" defer></script>
+    <link rel="stylesheet" href="css/reportes.css">
+</head>
+<body>
+    <div id="header"></div> <!-- Aquí se cargará el header -->
+    <main class="container mt-5 pt-5">
+    <h1>Reporte de Ganancias</h1>
+    <table id="tablaGanancias">
+        <thead>
+            <tr>
+                <th>ID Factura</th>
+                <th>Subtotal</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Datos serán insertados aquí dinámicamente -->
+        </tbody>
+    </table>
+    <h3>Total de Ganancias: <span id="totalGanancias">$0.00</span></h3>
+    <button id="exportarPdf">Exportar a PDF</button>
+</body>
+</html>

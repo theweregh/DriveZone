@@ -256,7 +256,7 @@ function guardarCambiosUsuario(id) {
 
         // Actualizar lista de usuarios
         cargarUsuarios();
-    })¿
+    })
 }
 function validarCorreo(email) {
     const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/;
