@@ -18,6 +18,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Servicio para la gestión de facturas en el sistema.
@@ -244,5 +245,15 @@ public class FacturaService {
         cellValue.setBorderWidth(1);
         table.addCell(cellValue);
     }
+    /**
+     * Obtiene una lista de facturas asociadas a un usuario.
+     *
+     * @param username El nombre de usuario asociado a las facturas.
+     * @return Lista de facturas asociadas al usuario.
+     */
+    public List<Factura> obtenerFacturasPorUsuario(String username) {
+        return facturaRepository.findByOrdenCompraUsuarioUsername(username);
+    }
+
 }
 

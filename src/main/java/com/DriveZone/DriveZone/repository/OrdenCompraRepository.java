@@ -3,6 +3,8 @@ package com.DriveZone.DriveZone.repository;
 import com.DriveZone.DriveZone.models.OrdenCompra;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Repositorio para la entidad {@link OrdenCompra}.
  * <p>

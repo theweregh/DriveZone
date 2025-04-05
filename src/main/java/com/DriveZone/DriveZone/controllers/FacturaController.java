@@ -1,8 +1,11 @@
 package com.DriveZone.DriveZone.controllers;
 
+import com.DriveZone.DriveZone.dao.UsuarioDao;
 import com.DriveZone.DriveZone.models.Factura;
+import com.DriveZone.DriveZone.models.Usuario;
 import com.DriveZone.DriveZone.services.EmailService;
 import com.DriveZone.DriveZone.services.FacturaService;
+import com.DriveZone.DriveZone.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,7 +28,10 @@ public class FacturaController {
     private FacturaService facturaService;
     @Autowired
     private EmailService emailService;
-
+    @Autowired
+    private JWTUtil jwtUtil;
+    @Autowired
+    private UsuarioDao usuarioDao;
     /**
      * Obtiene todas las facturas registradas en el sistema.
      *
@@ -110,5 +116,45 @@ public class FacturaController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error al enviar el correo: " + e.getMessage());
         }
+    }/*
+    @GetMapping
+public List<Factura> obtenerFacturasPorUsuario(@AuthenticationPrincipal Usuario usuarioAutenticado) {
+    if (usuarioAutenticado == null) {
+        throw new RuntimeException("Usuario no autenticado");
+    }
+
+    String emailUsuario = usuarioAutenticado.getUsername();
+    return facturaService.obtenerFacturasPorUsuario(emailUsuario);
+}*//*
+@GetMapping("/mis-facturas")
+public List<Factura> obtenerFacturasPorUsuario(@AuthenticationPrincipal UserDetails userDetails) {
+    String username = userDetails.getUsername();
+    return facturaService.obtenerFacturasPorUsuario(username);
+}
+*/
+    /**
+     * Retorna la lista de facturas asociadas al usuario autenticado.
+     *
+     * @param token Token JWT enviado en el header Authorization.
+     * @return Lista de facturas o error si no autorizado.
+     */
+    @GetMapping("/mis-facturas")
+    public ResponseEntity<?> obtenerFacturasPorUsuario(@RequestHeader(value = "Authorization") String token) {
+        // Validar token
+        String userId = jwtUtil.getKey(token);
+        if (userId == null) {
+            return ResponseEntity.status(401).body("No autorizado: token inválido");
+        }
+
+        // Obtener usuario autenticado
+        Usuario usuario = usuarioDao.getUserById(Integer.parseInt(userId));
+        if (usuario == null) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+
+        // Obtener facturas por el username (o puedes usar el ID si prefieres)
+        List<Factura> facturas = facturaService.obtenerFacturasPorUsuario(usuario.getUsername());
+
+        return ResponseEntity.ok(facturas);
     }
 }

@@ -3,6 +3,8 @@ package com.DriveZone.DriveZone.repository;
 import com.DriveZone.DriveZone.models.Factura;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Repositorio para la entidad {@link Factura}.
  * <p>
@@ -14,4 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 2025-03-30
  */
 public interface FacturaRepository extends JpaRepository<Factura, Integer> {
+    //List<Factura> findByOrdenCompra_Usuario_Email(String email);
+    //List<Factura> findByUsuario_Email(String email);
+    List<Factura> findByOrdenCompraUsuarioUsername(String username);
 }

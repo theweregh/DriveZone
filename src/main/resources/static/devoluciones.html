@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestión de Devoluciones</title>
+
+    <!-- Estilos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- jQuery (para el .load del header) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="css/styleheaderCliente.css">
+
+    <!-- Script de funcionalidad -->
+    <script defer src="js/devoluciones.js"></script>
+</head>
+<body>
+    <!-- Header dinámico -->
+    <header id="header"></header>
+    <!-- Contenedor principal -->
+    <main class="container mt-5">
+        <div class="text-center mb-4">
+            <h1>Mis Facturas</h1>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Factura</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="facturasTable">
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
+
