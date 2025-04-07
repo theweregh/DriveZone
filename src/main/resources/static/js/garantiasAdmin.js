@@ -75,7 +75,7 @@ function generarOpcionesEstado(estadoActual) {
         .map(est => `<option value="${est}" ${est === estadoActual ? "selected" : ""}>${est}</option>`)
         .join("");
 }
-
+/*
 function actualizarEstado(idGarantia) {
     const nuevoEstado = document.querySelector(`#estado-${idGarantia}`).value;
 
@@ -96,4 +96,52 @@ function actualizarEstado(idGarantia) {
         cargarGarantias(); // refrescar
     })
     .catch(err => console.error("❌", err));
+}*/
+function actualizarEstado(idGarantia) {
+    // Primero buscamos los datos completos de la garantía para obtener la fecha de la factura
+    fetch(`${GARANTIAS_URL}/${idGarantia}`, {
+        method: "GET",
+        headers: {
+            "Authorization": token,
+            "Content-Type": "application/json"
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Error al obtener datos de la garantía");
+        return res.json();
+    })
+    .then(garantia => {
+        const fechaFactura = new Date(garantia.factura.fecha);
+        const hoy = new Date();
+
+        const tresMesesEnMilis = 3 * 30 * 24 * 60 * 60 * 1000; // Aprox. 3 meses
+        const diferencia = hoy - fechaFactura;
+
+        if (diferencia > tresMesesEnMilis) {
+            alert("⚠️ No se puede actualizar esta garantía porque la compra tiene más de 3 meses.");
+            return; // ❌ No hace la petición
+        }
+
+        const nuevoEstado = document.querySelector(`#estado-${idGarantia}`).value;
+
+        // Si no han pasado más de 3 meses, sí hacemos la actualización
+        fetch(`${GARANTIAS_URL}/${idGarantia}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(nuevoEstado)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Error al actualizar estado");
+            return res.json();
+        })
+        .then(() => {
+            alert("✅ Estado actualizado correctamente.");
+            cargarGarantias(); // refrescar
+        })
+        .catch(err => console.error("❌", err));
+    })
+    .catch(err => console.error("❌ Error al validar fecha de la garantía:", err));
 }

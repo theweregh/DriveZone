@@ -55,6 +55,28 @@ public class EmailService {
         mailSender.send(mensaje);
         System.out.println("✅ Correo enviado exitosamente a " + destinatario);
     }
+    public void enviarRespuestaGarantia(String destinatario, String estado, String mensajeAdicional) throws MessagingException {
+    MimeMessage mensaje = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, StandardCharsets.UTF_8.name());
+
+    helper.setFrom(REMITENTE);
+    helper.setTo(destinatario);
+    helper.setSubject("Respuesta a tu solicitud de garantía");
+
+    String contenido = String.format("""
+        Estimado cliente,<br><br>
+        Su solicitud de garantía ha sido procesada. El estado actualizado es: <strong>%s</strong>.<br><br>
+        %s<br><br>
+        Gracias por confiar en DriveZone.<br><br>
+        --<br>
+        DriveZone Team
+    """, estado.toUpperCase(), mensajeAdicional != null ? mensajeAdicional : "");
+
+    helper.setText(contenido, true);
+    mailSender.send(mensaje);
+    System.out.println("📧 Correo de garantía enviado a: " + destinatario);
+}
+
 }
 
 
