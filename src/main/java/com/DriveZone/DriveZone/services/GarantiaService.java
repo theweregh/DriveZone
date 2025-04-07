@@ -2,6 +2,7 @@ package com.DriveZone.DriveZone.services;
 
 import com.DriveZone.DriveZone.models.Factura;
 import com.DriveZone.DriveZone.models.Garantia;
+import com.DriveZone.DriveZone.models.GarantiaEstado;
 import com.DriveZone.DriveZone.repository.FacturaRepository;
 import com.DriveZone.DriveZone.repository.GarantiaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,12 @@ public Garantia guardar(Garantia garantia) {
 
     public void eliminar(Integer id) {
         garantiaRepository.deleteById(id);
+    }
+    public Garantia actualizarEstado(Integer id, GarantiaEstado nuevoEstado) {
+        Garantia garantia = garantiaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Garantía no encontrada"));
+
+        garantia.setEstado(nuevoEstado);
+        return garantiaRepository.save(garantia);
     }
 }
