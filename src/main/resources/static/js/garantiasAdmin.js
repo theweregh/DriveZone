@@ -1,3 +1,18 @@
+// Cargar el header desde header.html
+        document.addEventListener("DOMContentLoaded", function () {
+    fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("header").innerHTML = data;
+        })
+        .catch(error => console.error("Error cargando el header:", error));
+});
+function cerrarSesion() {
+        localStorage.removeItem("token"); // Borra el token
+        localStorage.removeItem("carrito"); // Borra el carrito
+        sessionStorage.clear(); // Limpia la sesión
+        window.location.href = "index.html"; // Redirige al login
+    }
 const GARANTIAS_URL = "/api/garantias";
 const token = localStorage.getItem("token");
 
