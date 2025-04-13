@@ -32,6 +32,7 @@ public class FacturaController {
     private JWTUtil jwtUtil;
     @Autowired
     private UsuarioDao usuarioDao;
+
     /**
      * Obtiene todas las facturas registradas en el sistema.
      *
@@ -116,22 +117,7 @@ public class FacturaController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error al enviar el correo: " + e.getMessage());
         }
-    }/*
-    @GetMapping
-public List<Factura> obtenerFacturasPorUsuario(@AuthenticationPrincipal Usuario usuarioAutenticado) {
-    if (usuarioAutenticado == null) {
-        throw new RuntimeException("Usuario no autenticado");
     }
-
-    String emailUsuario = usuarioAutenticado.getUsername();
-    return facturaService.obtenerFacturasPorUsuario(emailUsuario);
-}*//*
-@GetMapping("/mis-facturas")
-public List<Factura> obtenerFacturasPorUsuario(@AuthenticationPrincipal UserDetails userDetails) {
-    String username = userDetails.getUsername();
-    return facturaService.obtenerFacturasPorUsuario(username);
-}
-*/
     /**
      * Retorna la lista de facturas asociadas al usuario autenticado.
      *

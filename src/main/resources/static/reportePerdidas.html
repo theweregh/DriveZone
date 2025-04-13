@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Pérdidas</title>
+    <link rel="stylesheet" href="css/reportePerdidas.css">
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- jsPDF-AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+</head>
+<body>
+    <h1>Reporte de Pérdidas</h1>
+    <table id="tablaPerdidas">
+        <thead>
+            <tr>
+                <th>ID Garantía</th>
+                <th>ID Factura</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Total</th>
+                <th>Motivo</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="resumen">
+        <strong>Total pérdidas: $<span id="totalPerdidas">0</span></strong>
+    </div>
+
+    <button id="exportarPDF">Exportar a PDF</button>
+
+    <script src="js/reportePerdidas.js"></script>
+</body>
+</html>
