@@ -1,4 +1,4 @@
-body {
+/*body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
@@ -56,4 +56,115 @@ button {
 
 button:hover {
     background: #0056b3;
+}*/
+/* Estilo general */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Arial', sans-serif;
+  color: #333;
 }
+
+/* Header */
+#header {
+  background-color: #007bff;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Contenedor principal */
+.container {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+/* Título principal */
+h1 {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 1.5rem;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+table th, table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+  background-color: #007bff;
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Botones */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.buttons button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #218838;
+}
+
+/* Añadir espaciado entre los botones */
+.buttons button:not(:last-child) {
+  margin-right: 1rem;
+}
+
+/* Estilo del botón de descarga */
+.buttons button:nth-child(1) {
+  background-color: #007bff;
+}
+
+.buttons button:nth-child(1):hover {
+  background-color: #0056b3;
+}
+
+.buttons button:nth-child(2) {
+  background-color: #17a2b8;
+}
+
+.buttons button:nth-child(2):hover {
+  background-color: #117a8b;
+}
+
+.buttons button:nth-child(3) {
+  background-color: #dc3545;
+}
+
+.buttons button:nth-child(3):hover {
+  background-color: #c82333;
+}
+

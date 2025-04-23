@@ -11,16 +11,17 @@
     <div class="container mt-5 pt-5"> <!-- Se agregó pt-5 para más espacio -->
         <h1 class="mb-4">Panel de Administrador</h1>
         <div class="d-grid gap-3">
-            <button class="btn btn-primary" onclick="gestionarUsuarios()">Gestión de Usuarios</button>
+            <button class="btn btn-secondary" onclick="gestionarUsuarios()">Gestión de Usuarios</button>
             <button class="btn btn-secondary" onclick="gestionarClientes()">Gestión de Clientes</button>
             <button class="btn btn-secondary" onclick="gestionarInventario()">Gestión de Inventario</button>
-            <button class="btn btn-success" onclick="verCarrito()">Carrito de Compra</button>
+            <button class="btn btn-secondary" onclick="verCarrito()">Carrito de Compra</button>
             <button class="btn btn-secondary" onclick="verOrden()">Ordenes De Compra</button>
             <button class="btn btn-secondary" onclick="verFactura()">Facturas De Venta</button>
             <button class="btn btn-secondary" onclick="registroMovimiento()">Movimientos de Accesorio</button>
             <button class="btn btn-secondary" onclick="reporteGanancia()">Reporte de Ganancia</button>
             <button class="btn btn-secondary" onclick="reportePerdidas()">Reporte de Perdidas</button>
             <button class="btn btn-secondary" onclick="gestionGarantia()">Gestión de Garantía</button>
+            <button class="btn btn-secondary" onclick="informeInventario()">Informe de Inventario</button>
         </div>
     </div>
     <script>
@@ -70,6 +71,9 @@
         }
         function reportePerdidas() {
             window.location.href = 'reportePerdidas.html';
+        }
+        function informeInventario() {
+            window.location.href = 'informeInventario.html';
         }
     </script>
 </body>
