@@ -81,8 +81,8 @@ function generarReportePerdidasPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // 🖼 Logo (si quieres uno)
-    const imagenRuta = "/img/DriveZone.png"; // Cambia esta ruta a la de tu logo real
+    // 🖼 Logo
+    const imagenRuta = "/img/DriveZone.png";
     convertirImagenABase64(imagenRuta).then(imagenBase64 => {
         if (imagenBase64) {
             doc.addImage(imagenBase64, "PNG", 15, 10, 30, 30);
