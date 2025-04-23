@@ -123,7 +123,7 @@ function abrirModalEditar(id) {
 
     new bootstrap.Modal(document.getElementById("modalEditarAccesorio")).show();
 }
-/* ✅ Editar accesorio */
+/* ✅ Editar accesorio *//*
 document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -150,6 +150,25 @@ document.getElementById("formEditarAccesorio").addEventListener("submit", async 
     }
 
     const accesorioActualizado = { nombre, descripcion, stock, precioVenta, imagen, descuento };
+    if (accesorioOriginal.getDescuento() != accesorioActualizado.getDescuento()) {
+    double precioOriginal = accesorioOriginal.getPrecioVenta();
+    double descuentoNuevo = accesorioActualizado.getDescuento();
+    double nuevoPrecio = precioOriginal * (1 - descuentoNuevo / 100);
+
+    String asunto = "¡Descuento actualizado en " + accesorioActualizado.getNombre() + "!";
+    String cuerpo = "Hola, tenemos una novedad en nuestro catálogo:\n\n" +
+                    "🔸 Producto: " + accesorioActualizado.getNombre() + "\n" +
+                    "💰 Precio original: $" + precioOriginal + "\n" +
+                    "📉 Descuento aplicado: " + descuentoNuevo + "%\n" +
+                    "🛒 Nuevo precio con descuento: $" + nuevoPrecio + "\n\n" +
+                    "¡No te lo pierdas!";
+
+    List<Usuario> clientes = usuarioDao.getUsers(); // Asegúrate de filtrar si es necesario
+
+    for (Usuario cliente : clientes) {
+        emailService.enviarCorreo(cliente.getCorreo(), asunto, cuerpo);
+    }
+}
 
     try {
         const response = await fetch(`/accesorios/${id}`, {
@@ -167,7 +186,83 @@ document.getElementById("formEditarAccesorio").addEventListener("submit", async 
         console.error(error);
         alert("Hubo un problema al actualizar el accesorio.");
     }
+});*/
+document.getElementById("formEditarAccesorio").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const id = document.getElementById("editId").value;
+    const nombre = document.getElementById("editNombre").value.trim();
+    const descripcion = document.getElementById("editDescripcion").value.trim();
+    const stock = parseInt(document.getElementById("editStock").value);
+    const precioVenta = parseFloat(document.getElementById("editPrecio").value);
+    const imagen = document.getElementById("editImagen").value.trim();
+    const descuento = parseFloat(document.getElementById("editDescuento").value);
+
+    if (!nombre || !descripcion || !imagen) {
+        alert("Todos los campos deben estar llenos.");
+        return;
+    }
+    if (isNaN(stock) || stock < 0) {
+        alert("El stock no puede ser negativo.");
+        return;
+    }
+    if (isNaN(descuento) || descuento < 0 || descuento > 100) {
+        alert("El descuento debe estar entre 0 y 100.");
+        return;
+    }
+
+    try {
+        // 1. Obtener datos del accesorio original
+        const resOriginal = await fetch(`/api/accesorio/${id}`, {
+            headers: { "Authorization": token }
+        });
+
+        if (!resOriginal.ok) throw new Error("Error obteniendo el accesorio original");
+
+        const accesorioOriginal = await resOriginal.json();
+
+        const accesorioActualizado = {
+            nombre,
+            descripcion,
+            stock,
+            precioVenta,
+            imagen,
+            descuento
+        };
+
+        // 2. Comparamos el descuento original vs nuevo
+        const descuentoOriginal = accesorioOriginal.descuento;
+        if (descuentoOriginal !== descuento) {
+            // Llamamos a tu endpoint personalizado para que se encargue del correo
+            await fetch(`/api/notificar-descuento/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify(accesorioActualizado)
+            });
+        }
+
+        // 3. Actualizamos el accesorio
+        const response = await fetch(`/accesorios/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "Authorization": token },
+            body: JSON.stringify(accesorioActualizado)
+        });
+
+        if (!response.ok) throw new Error("Error al actualizar el accesorio");
+
+        alert("Accesorio actualizado correctamente");
+        cargarAccesorios();
+        bootstrap.Modal.getInstance(document.getElementById("modalEditarAccesorio")).hide();
+
+    } catch (error) {
+        console.error(error);
+        alert("Hubo un problema al actualizar el accesorio.");
+    }
 });
+
 /* ✅ Eliminar accesorio */
 async function eliminarAccesorio(id, nombreAccesorio) {
     if (!confirm("¿Seguro que quieres eliminar este accesorio?")) return;

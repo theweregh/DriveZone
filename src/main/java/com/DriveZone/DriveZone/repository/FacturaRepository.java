@@ -16,7 +16,5 @@ import java.util.List;
  * @since 2025-03-30
  */
 public interface FacturaRepository extends JpaRepository<Factura, Integer> {
-    //List<Factura> findByOrdenCompra_Usuario_Email(String email);
-    //List<Factura> findByUsuario_Email(String email);
     List<Factura> findByOrdenCompraUsuarioUsername(String username);
 }

@@ -75,28 +75,6 @@ function generarOpcionesEstado(estadoActual) {
         .map(est => `<option value="${est}" ${est === estadoActual ? "selected" : ""}>${est}</option>`)
         .join("");
 }
-/*
-function actualizarEstado(idGarantia) {
-    const nuevoEstado = document.querySelector(`#estado-${idGarantia}`).value;
-
-    fetch(`${GARANTIAS_URL}/${idGarantia}`, {
-        method: "PUT",
-        headers: {
-            "Authorization": token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(nuevoEstado)
-    })
-    .then(res => {
-        if (!res.ok) throw new Error("Error al actualizar estado");
-        return res.json();
-    })
-    .then(() => {
-        alert("✅ Estado actualizado correctamente.");
-        cargarGarantias(); // refrescar
-    })
-    .catch(err => console.error("❌", err));
-}*/
 function actualizarEstado(idGarantia) {
     // Primero buscamos los datos completos de la garantía para obtener la fecha de la factura
     fetch(`${GARANTIAS_URL}/${idGarantia}`, {

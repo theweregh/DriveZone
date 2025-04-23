@@ -1,8 +1,11 @@
 package com.DriveZone.DriveZone.controllers;
 
 import com.DriveZone.DriveZone.dao.AccesorioDao;
+import com.DriveZone.DriveZone.dao.UsuarioDao;
 import com.DriveZone.DriveZone.models.Accesorio;
+import com.DriveZone.DriveZone.models.Usuario;
 import com.DriveZone.DriveZone.services.AccesorioService;
+import com.DriveZone.DriveZone.services.EmailService;
 import com.DriveZone.DriveZone.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,10 @@ public class AccesorioController {
     private JWTUtil jwtUtil;
     @Autowired
     private AccesorioService accesorioService;
-
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private UsuarioDao usuarioDao;
     /**
      * Obtiene un accesorio específico según su ID.
      *
@@ -175,5 +181,45 @@ public class AccesorioController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PostMapping("/api/notificar-descuento/{id}")
+public ResponseEntity<String> notificarDescuento(
+    @PathVariable int id,
+    @RequestBody Accesorio accesorioNuevo,
+    @RequestHeader(value = "Authorization") String token) {
+
+    if (!validarToken(token)) {
+        return ResponseEntity.status(403).body("Token inválido");
+    }
+
+    Optional<Accesorio> accesorioOpt = accesorioDao.findById(id);
+    if (accesorioOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Accesorio accesorioOriginal = accesorioOpt.get();
+    if (accesorioOriginal.getDescuento() != accesorioNuevo.getDescuento()) {
+        double precioOriginal = accesorioOriginal.getPrecioVenta();
+        double descuentoNuevo = accesorioNuevo.getDescuento();
+        double nuevoPrecio = precioOriginal * (1 - descuentoNuevo / 100.0);
+
+        String asunto = "¡Descuento actualizado en " + accesorioNuevo.getNombre() + "!";
+        String cuerpo = "Hola, tenemos una novedad en nuestro catálogo:\n\n" +
+                        "🔸 Producto: " + accesorioNuevo.getNombre() + "\n" +
+                        "💰 Precio original: $" + precioOriginal + "\n" +
+                        "📉 Descuento aplicado: " + descuentoNuevo + "%\n" +
+                        "🛒 Nuevo precio con descuento: $" + nuevoPrecio + "\n\n" +
+                        "¡No te lo pierdas!";
+
+        List<Usuario> clientes = usuarioDao.getUsers(); // Asegúrate que esté bien implementado
+        for (Usuario cliente : clientes) {
+            emailService.enviarCorreo(cliente.getCorreo(), asunto, cuerpo);
+        }
+
+        return ResponseEntity.ok("Correos enviados");
+    }
+
+    return ResponseEntity.ok("No hubo cambio de descuento, no se envió correo");
+}
+
 }
 
