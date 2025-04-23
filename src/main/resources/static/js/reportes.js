@@ -46,7 +46,7 @@ function cargarFacturas() {
         })
         .catch(error => console.error("Error cargando facturas:", error));
 }
-
+/*
 function exportarAPdf() {
     const { jsPDF } = window.jspdf;
     let doc = new jsPDF();
@@ -74,5 +74,81 @@ function exportarAPdf() {
     doc.text(`Total de Ganancias: ${totalGanancias}`, 20, finalY + 10);
 
     doc.save("reporte_ganancias.pdf");
+}*/
+function exportarAPdf() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // 🖼 Logo
+    const imagenRuta = "/img/DriveZone.png"; // Ruta del logo
+
+    convertirImagenABase64(imagenRuta).then(imagenBase64 => {
+        if (imagenBase64) {
+            doc.addImage(imagenBase64, "PNG", 15, 10, 30, 30);
+        }
+
+        // 📝 Título
+        doc.setFontSize(18);
+        doc.text("Reporte de Ganancias", 105, 20, null, null, "center");
+
+        // 📅 Fecha
+        const fechaHoy = new Date().toLocaleDateString();
+        doc.setFontSize(11);
+        doc.text(`Fecha del reporte: ${fechaHoy}`, 105, 30, null, null, "center");
+
+        // 🧾 Tabla
+        let filas = [];
+        document.querySelectorAll("#tablaGanancias tbody tr").forEach(row => {
+            let cols = row.querySelectorAll("td");
+            filas.push([
+                cols[0].textContent,
+                cols[1].textContent,
+                cols[2].textContent
+            ]);
+        });
+
+        doc.autoTable({
+            startY: 45,
+            head: [["ID Factura", "Subtotal", "Total"]],
+            body: filas,
+            theme: "grid",
+            styles: {
+                halign: "center",
+                valign: "middle",
+                fontSize: 10
+            },
+            headStyles: {
+                fillColor: [40, 167, 69], // Verde
+                textColor: 255,
+                fontStyle: "bold"
+            }
+        });
+
+        let finalY = doc.lastAutoTable.finalY || 30;
+        let totalGanancias = document.getElementById("totalGanancias").innerText;
+        doc.setFontSize(12);
+        doc.text(`Total de Ganancias: ${totalGanancias}`, 15, finalY + 15);
+
+        doc.save("Reporte_Ganancias.pdf");
+    });
 }
+
+// 🧰 Función utilitaria para convertir imagen a Base64
+function convertirImagenABase64(url) {
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+            let reader = new FileReader();
+            reader.onloadend = function () {
+                resolve(reader.result);
+            }
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.onerror = () => reject("Error al cargar la imagen");
+        xhr.open("GET", url);
+        xhr.responseType = "blob";
+        xhr.send();
+    });
+}
+
 
