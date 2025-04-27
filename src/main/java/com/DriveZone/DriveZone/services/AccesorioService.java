@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author DriveZone Team
  * @version 1.1
- * @since 2025-03-30
+ * @since 2025-04-27
  */
 @Service
 public class AccesorioService {
@@ -99,6 +99,13 @@ public class AccesorioService {
                     accesorio.getId()));
         }
     }
+
+    /**
+     * Reduce el stock de un accesorio y registra la acción en el historial.
+     *
+     * @param accesorio Accesorio cuyo stock se va a reducir.
+     * @return El accesorio actualizado.
+     */
     public Accesorio reduceStock(Accesorio accesorio) {
         Accesorio nuevoAccesorio = accesorioRepository.save(accesorio);
 

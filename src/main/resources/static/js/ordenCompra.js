@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/carrito"; // URL del backend
+const API_URL = "/api/carrito"; // URL del backend
 
 // 🔹 Cargar el carrito desde el backend
 function cargarCarrito() {

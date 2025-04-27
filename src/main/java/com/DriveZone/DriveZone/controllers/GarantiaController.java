@@ -13,6 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador REST para gestionar las garantías de productos.
+ * Proporciona operaciones para listar, buscar, crear, eliminar y actualizar el estado de las garantías.
+ *
+ * @author DriveZone Team
+ * @version 1.1
+ * @since 2025-04-27
+ */
 @RestController
 @RequestMapping("/api/garantias")
 @CrossOrigin(origins = "*")
@@ -22,26 +30,55 @@ public class GarantiaController {
     @Autowired
     private EmailService emailService;
 
+    /**
+     * Lista todas las garantías registradas.
+     *
+     * @return lista de garantías.
+     */
     @GetMapping
     public List<Garantia> listar() {
         return garantiaService.listarTodas();
     }
 
+    /**
+     * Busca una garantía por su ID.
+     *
+     * @param id ID de la garantía a buscar.
+     * @return la garantía encontrada, si existe.
+     */
     @GetMapping("/{id}")
     public Optional<Garantia> buscar(@PathVariable Integer id) {
         return garantiaService.buscarPorId(id);
     }
 
+    /**
+     * Crea una nueva garantía.
+     *
+     * @param garantia objeto Garantia a crear.
+     * @return la garantía creada.
+     */
     @PostMapping
     public Garantia crear(@RequestBody Garantia garantia) {
         return garantiaService.guardar(garantia);
     }
 
+    /**
+     * Elimina una garantía existente por su ID.
+     *
+     * @param id ID de la garantía a eliminar.
+     */
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Integer id) {
         garantiaService.eliminar(id);
     }
 
+    /**
+     * Actualiza el estado de una garantía y envía un correo al cliente notificando el resultado.
+     *
+     * @param id          ID de la garantía a actualizar.
+     * @param nuevoEstado nuevo estado para la garantía.
+     * @return ResponseEntity con la garantía actualizada o mensaje de error en caso de fallo.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarEstado(@PathVariable Integer id, @RequestBody GarantiaEstado nuevoEstado) {
         try {

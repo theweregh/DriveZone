@@ -336,7 +336,7 @@ document.getElementById("procesar-compra").addEventListener("click", async funct
     }
         }
         const stockData = carrito.map(item => ({
-    id: item.id,   // Asegúrate de que el backend espera "id", no "id_accesorio"
+    id: item.id,
     stock: item.cantidad
 }));
         console.log("carrito enviada:", JSON.stringify(stockData, null, 2));

@@ -138,7 +138,7 @@ public class FacturaController {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
 
-        // Obtener facturas por el username (o puedes usar el ID si prefieres)
+        // Obtener facturas por el username
         List<Factura> facturas = facturaService.obtenerFacturasPorUsuario(usuario.getUsername());
 
         return ResponseEntity.ok(facturas);

@@ -15,10 +15,14 @@ import java.util.stream.Collectors;
 
 /**
  * Servicio para gestionar el historial de accesorios y generar reportes en PDF.
+ * <p>
+ * Este servicio permite generar reportes en PDF del historial de accesorios, incluyendo acciones agregadas y eliminadas,
+ * con formato mejorado y la opción de incluir un logo.
+ * </p>
  *
  * @author DriveZone Team
  * @version 1.1
- * @since 2025-03-30
+ * @since 2025-04-27
  */
 @Service
 public class HistorialAccesorioService {
@@ -28,7 +32,18 @@ public class HistorialAccesorioService {
         this.historialAccesorioRepository = historialAccesorioRepository;
     }
 
-    // Método para agregar el logo y el formato mejorado
+    /**
+     * Genera un archivo PDF con el historial de accesorios.
+     * <p>
+     * El PDF incluye un logo, un título centrado, la fecha del reporte y una tabla con los detalles del historial.
+     * </p>
+     *
+     * @param historial Listado de objetos {@link HistorialAccesorio} a incluir en el reporte.
+     * @param titulo    Título del reporte.
+     * @return El reporte en formato PDF como un arreglo de bytes.
+     * @throws IOException       Si ocurre un error al leer o escribir el archivo.
+     * @throws DocumentException Si ocurre un error al generar el documento PDF.
+     */
     private byte[] generarPdf(List<HistorialAccesorio> historial, String titulo) throws IOException, DocumentException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Document document = new Document();
@@ -86,12 +101,24 @@ public class HistorialAccesorioService {
         return outputStream.toByteArray();
     }
 
-    // Método para generar el PDF completo del historial
+    /**
+     * Genera el reporte completo del historial de accesorios en formato PDF.
+     *
+     * @return El historial completo en formato PDF como un arreglo de bytes.
+     * @throws IOException       Si ocurre un error al leer o escribir el archivo.
+     * @throws DocumentException Si ocurre un error al generar el documento PDF.
+     */
     public byte[] generarPdfHistorial() throws IOException, DocumentException {
         return generarPdf(obtenerHistorial(), "Historial de Accesorios");
     }
 
-    // Método para generar el PDF de accesorios agregados
+    /**
+     * Genera el reporte en PDF solo para los accesorios agregados.
+     *
+     * @return Los accesorios agregados en formato PDF como un arreglo de bytes.
+     * @throws IOException       Si ocurre un error al leer o escribir el archivo.
+     * @throws DocumentException Si ocurre un error al generar el documento PDF.
+     */
     public byte[] generarPdfAgregados() throws IOException, DocumentException {
         List<HistorialAccesorio> agregados = obtenerHistorial().stream()
                 .filter(h -> h.getAccion() == Accion.AGREGADO)
@@ -99,7 +126,13 @@ public class HistorialAccesorioService {
         return generarPdf(agregados, "Historial de Accesorios Agregados");
     }
 
-    // Método para generar el PDF de accesorios eliminados
+    /**
+     * Genera el reporte en PDF solo para los accesorios eliminados.
+     *
+     * @return Los accesorios eliminados en formato PDF como un arreglo de bytes.
+     * @throws IOException       Si ocurre un error al leer o escribir el archivo.
+     * @throws DocumentException Si ocurre un error al generar el documento PDF.
+     */
     public byte[] generarPdfEliminados() throws IOException, DocumentException {
         List<HistorialAccesorio> eliminados = obtenerHistorial().stream()
                 .filter(h -> h.getAccion() == Accion.ELIMINADO)
@@ -107,7 +140,11 @@ public class HistorialAccesorioService {
         return generarPdf(eliminados, "Historial de Accesorios Eliminados");
     }
 
-    // Método para obtener el historial desde el repositorio
+    /**
+     * Obtiene todos los registros de historial de accesorios desde la base de datos.
+     *
+     * @return Lista de objetos {@link HistorialAccesorio}.
+     */
     public List<HistorialAccesorio> obtenerHistorial() {
         return historialAccesorioRepository.findAll();
     }

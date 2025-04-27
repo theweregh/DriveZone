@@ -229,14 +229,14 @@ function guardarCambiosUsuario(id) {
         }
     console.log("Datos enviados:", usuarioActualizado);
 
-    let token = localStorage.getItem("token"); // Asegúrate de tener el token almacenado
+    let token = localStorage.getItem("token");
 
     // Enviar datos al backend
     fetch(`api/usuarios/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token // Incluir el token
+            "Authorization": token
         },
         body: JSON.stringify(usuarioActualizado)
     })

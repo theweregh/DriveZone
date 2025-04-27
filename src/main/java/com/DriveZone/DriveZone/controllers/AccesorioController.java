@@ -30,6 +30,7 @@ public class AccesorioController {
     private EmailService emailService;
     @Autowired
     private UsuarioDao usuarioDao;
+
     /**
      * Obtiene un accesorio específico según su ID.
      *
@@ -182,45 +183,54 @@ public class AccesorioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /**
+     * Notifica a los usuarios sobre un cambio en el descuento de un accesorio.
+     *
+     * @param id             Identificador del accesorio que tiene un nuevo descuento.
+     * @param accesorioNuevo Objeto {@link Accesorio} que contiene el nuevo descuento.
+     * @param token          Token JWT de autorización enviado en la solicitud.
+     * @return Respuesta indicando si se enviaron los correos o si no hubo cambios en el descuento.
+     */
     @PostMapping("/api/notificar-descuento/{id}")
-public ResponseEntity<String> notificarDescuento(
-    @PathVariable int id,
-    @RequestBody Accesorio accesorioNuevo,
-    @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<String> notificarDescuento(
+            @PathVariable int id,
+            @RequestBody Accesorio accesorioNuevo,
+            @RequestHeader(value = "Authorization") String token) {
 
-    if (!validarToken(token)) {
-        return ResponseEntity.status(403).body("Token inválido");
-    }
-
-    Optional<Accesorio> accesorioOpt = accesorioDao.findById(id);
-    if (accesorioOpt.isEmpty()) {
-        return ResponseEntity.notFound().build();
-    }
-
-    Accesorio accesorioOriginal = accesorioOpt.get();
-    if (accesorioOriginal.getDescuento() != accesorioNuevo.getDescuento()) {
-        double precioOriginal = accesorioOriginal.getPrecioVenta();
-        double descuentoNuevo = accesorioNuevo.getDescuento();
-        double nuevoPrecio = precioOriginal * (1 - descuentoNuevo / 100.0);
-
-        String asunto = "¡Descuento actualizado en " + accesorioNuevo.getNombre() + "!";
-        String cuerpo = "Hola, tenemos una novedad en nuestro catálogo:\n\n" +
-                        "🔸 Producto: " + accesorioNuevo.getNombre() + "\n" +
-                        "💰 Precio original: $" + precioOriginal + "\n" +
-                        "📉 Descuento aplicado: " + descuentoNuevo + "%\n" +
-                        "🛒 Nuevo precio con descuento: $" + nuevoPrecio + "\n\n" +
-                        "¡No te lo pierdas!";
-
-        List<Usuario> clientes = usuarioDao.getUsers(); // Asegúrate que esté bien implementado
-        for (Usuario cliente : clientes) {
-            emailService.enviarCorreo(cliente.getCorreo(), asunto, cuerpo);
+        if (!validarToken(token)) {
+            return ResponseEntity.status(403).body("Token inválido");
         }
 
-        return ResponseEntity.ok("Correos enviados");
-    }
+        Optional<Accesorio> accesorioOpt = accesorioDao.findById(id);
+        if (accesorioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-    return ResponseEntity.ok("No hubo cambio de descuento, no se envió correo");
-}
+        Accesorio accesorioOriginal = accesorioOpt.get();
+        if (accesorioOriginal.getDescuento() != accesorioNuevo.getDescuento()) {
+            double precioOriginal = accesorioOriginal.getPrecioVenta();
+            double descuentoNuevo = accesorioNuevo.getDescuento();
+            double nuevoPrecio = precioOriginal * (1 - descuentoNuevo / 100.0);
+
+            String asunto = "¡Descuento actualizado en " + accesorioNuevo.getNombre() + "!";
+            String cuerpo = "Hola, tenemos una novedad en nuestro catálogo:\n\n" +
+                    "🔸 Producto: " + accesorioNuevo.getNombre() + "\n" +
+                    "💰 Precio original: $" + precioOriginal + "\n" +
+                    "📉 Descuento aplicado: " + descuentoNuevo + "%\n" +
+                    "🛒 Nuevo precio con descuento: $" + nuevoPrecio + "\n\n" +
+                    "¡No te lo pierdas!";
+
+            List<Usuario> clientes = usuarioDao.getUsers();
+            for (Usuario cliente : clientes) {
+                emailService.enviarCorreo(cliente.getCorreo(), asunto, cuerpo);
+            }
+
+            return ResponseEntity.ok("Correos enviados");
+        }
+
+        return ResponseEntity.ok("No hubo cambio de descuento, no se envió correo");
+    }
 
 }
 
