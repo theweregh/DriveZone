@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function cargarFacturas() {
-    fetch("http://localhost:8080/api/facturas") // Ajusta la URL según tu API
+    fetch("/api/facturas") // Ajusta la URL según tu API
         .then(response => response.json())
         .then(data => {
             let totalGanancias = 0;
@@ -46,35 +46,6 @@ function cargarFacturas() {
         })
         .catch(error => console.error("Error cargando facturas:", error));
 }
-/*
-function exportarAPdf() {
-    const { jsPDF } = window.jspdf;
-    let doc = new jsPDF();
-    doc.text("Reporte de Ganancias", 20, 10);
-
-    let filas = [];
-    document.querySelectorAll("#tablaGanancias tbody tr").forEach(row => {
-        let cols = row.querySelectorAll("td");
-        filas.push([
-            cols[0].textContent,
-            cols[1].textContent,
-            cols[2].textContent
-        ]);
-    });
-
-    // Agregar tabla al PDF
-    doc.autoTable({
-        head: [["ID Factura", "Subtotal", "Total"]],
-        body: filas,
-        startY: 20
-    });
-
-    let finalY = doc.autoTable.previous.finalY || 30; // Ajuste para evitar error
-    let totalGanancias = document.getElementById("totalGanancias").innerText;
-    doc.text(`Total de Ganancias: ${totalGanancias}`, 20, finalY + 10);
-
-    doc.save("reporte_ganancias.pdf");
-}*/
 function exportarAPdf() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();

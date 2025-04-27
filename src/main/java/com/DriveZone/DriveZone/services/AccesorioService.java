@@ -99,4 +99,14 @@ public class AccesorioService {
                     accesorio.getId()));
         }
     }
+    public Accesorio reduceStock(Accesorio accesorio) {
+        Accesorio nuevoAccesorio = accesorioRepository.save(accesorio);
+
+        // Guardar en historial
+        historialRepository.save(new HistorialAccesorio(Accion.ELIMINADO,
+                nuevoAccesorio.getNombre(),
+                nuevoAccesorio.getId()));
+
+        return nuevoAccesorio;
+    }
 }

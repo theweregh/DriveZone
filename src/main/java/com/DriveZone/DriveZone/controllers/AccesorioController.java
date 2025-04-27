@@ -107,6 +107,7 @@ public class AccesorioController {
                 accesorio.setStock(nuevoStock);
                 accesorioDao.save(accesorio);
                 stockModificado = true; // Se modificó al menos un accesorio
+                accesorioService.reduceStock(accesorio);
             }
         }
 
