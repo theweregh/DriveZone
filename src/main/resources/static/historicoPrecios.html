@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico de Precios</title>
+  <link rel="stylesheet" href="css/históricoPreciosStyle.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Reporte Histórico de Precios</h1>
+    <form id="filtro-fechas">
+      <label>Desde: <input type="date" id="fechaInicio" name="fechaInicio"></label>
+      <label>Hasta: <input type="date" id="fechaFin" name="fechaFin"></label>
+      <button type="button" id="btnFiltrar">Filtrar</button>
+      <button type="button" id="btnExportar">Exportar PDF</button>
+    </form>
+    <table id="tablaHistorial">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Producto</th>
+          <th>Precio Anterior</th>
+          <th>Precio Actual</th>
+          <th>Fecha de Modificación</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    async function cargarHistorial(fechaInicio, fechaFin) {
+      const params = new URLSearchParams({ fechaInicio, fechaFin });
+      const res = await fetch('/api/precios/historial?' + params);
+      const data = await res.json();
+      const tbody = document.querySelector('#tablaHistorial tbody');
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const row = `<tr>
+          <td>${item.id}</td>
+          <td>${item.nombre}</td>
+          <td>${item.precioAnterior.toFixed(2)}</td>
+          <td>${item.precioActual.toFixed(2)}</td>
+          <td>${new Date(item.fechaModificacion).toLocaleDateString()}</td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    document.getElementById('btnFiltrar').addEventListener('click', () => {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+      cargarHistorial(inicio, fin);
+    });
+
+    document.getElementById('btnExportar').addEventListener('click', () => {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+      window.location = `/api/precios/historial/pdf?fechaInicio=${inicio}&fechaFin=${fin}`;
+    });
+
+    cargarHistorial('', '');
+  </script>
+</body>
+</html>

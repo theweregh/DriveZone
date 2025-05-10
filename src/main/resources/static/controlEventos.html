@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Eventos</title>
+  <link rel="stylesheet" href="css/controlEventosStyle.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Eventos de Compra y Venta</h1>
+    <form id="filtro-fechas">
+      <label>Desde: <input type="date" id="fechaInicio" name="fechaInicio"></label>
+      <label>Hasta: <input type="date" id="fechaFin" name="fechaFin"></label>
+      <button type="button" id="btnFiltrar">Filtrar</button>
+      <button type="button" id="btnExportar">Exportar PDF</button>
+    </form>
+    <table id="tablaEventos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    async function cargarEventos(desde, hasta) {
+      const params = new URLSearchParams({ fechaInicio: desde, fechaFin: hasta });
+      const res = await fetch('/api/eventos?' + params);
+      const data = await res.json();
+      const tbody = document.querySelector('#tablaEventos tbody');
+      tbody.innerHTML = '';
+      data.forEach(e => {
+        const row = `<tr>
+          <td>${e.id}</td>
+          <td>${e.tipo}</td>
+          <td>${new Date(e.fecha).toLocaleString()}</td>
+          <td>${e.descripcion}</td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    document.getElementById('btnFiltrar').addEventListener('click', () => {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+      cargarEventos(inicio, fin);
+    });
+
+    document.getElementById('btnExportar').addEventListener('click', () => {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+      window.location = `/api/eventos/pdf?fechaInicio=${inicio}&fechaFin=${fin}`;
+    });
+
+    cargarEventos('', '');
+  </script>
+</body>
+</html>
